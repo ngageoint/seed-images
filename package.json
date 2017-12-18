@@ -1,6 +1,6 @@
 {
     "name": "seed-images",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Angular component for Seed image discovery",
     "scripts": {
         "clean": "rimraf .tmp && rimraf dist",
