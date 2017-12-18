@@ -2,7 +2,7 @@
     "name": "seed-images",
     "version": "1.0.0",
     "description": "Angular component for Seed image discovery",
-    "main": "bundles/seed-images.umd.min.js",
+    "main": "bundles/seed-images.umd.js",
     "module": "index.js",
     "typings": "index.d.ts",
     "keywords": [

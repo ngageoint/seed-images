@@ -2,7 +2,6 @@
     "name": "seed-images",
     "version": "1.0.0",
     "description": "Angular component for Seed image discovery",
-    "main": "index.js",
     "scripts": {
         "clean": "rimraf .tmp && rimraf dist",
         "transpile": "ngc",
