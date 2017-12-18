@@ -5,7 +5,7 @@ An Angular component for [Seed](https://ngageoint.github.io/seed/) image discove
 `npm install --save seed-images`
 
 ## Dependencies
-* Angular 4
+* Angular 5
 * [PrimeNG](https://www.primefaces.org/primeng/)
 * [Font Awesome](http://fontawesome.io)
 * [ClipboardJS](https://clipboardjs.com/)
@@ -13,9 +13,9 @@ An Angular component for [Seed](https://ngageoint.github.io/seed/) image discove
 
 ## How to use
 * Import into app module: `import { SeedImagesModule } from 'seed-images';`
-* `apiUrl` argument, (required) pointing to a valid [SILO](https://github.com/JohnPTobe/silo) instance
+* `apiUrl` argument, (required) pointing to a valid [SILO](https://github.com/ngageoint/seed-silo) instance
 * `importUrl` argument, (optional) pointing to the algorithm import location a [Scale](https://github.com/ngageoint/scale) instance
-* `router` argument, reference to an Angular 4 router object
+* `router` argument, reference to an Angular 5 router object
 
 ## Examples
 ```
