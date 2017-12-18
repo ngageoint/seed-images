@@ -10,7 +10,7 @@
         "seed"
     ],
     "author": "Applied Information Sciences",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/appliedis/seed-images.git"

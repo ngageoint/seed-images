@@ -20,7 +20,7 @@
     },
     "homepage": "https://github.com/AppliedIS/seed-images#readme",
     "author": "Applied Information Sciences",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "devDependencies": {
         "@angular/animations": "^5.1.0",
         "@angular/compiler": "^5.1.0",
