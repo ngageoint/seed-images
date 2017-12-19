@@ -13,7 +13,7 @@ An Angular component for [Seed](https://ngageoint.github.io/seed/) image discove
 
 ## How to use
 * Import into app module: `import { SeedImagesModule } from 'seed-images';`
-* `environment` (required): reference to an Angular environment object.
+* `environment` (required): reference to an Angular environment object (more information below).
 * `apiUrl` (required): URL of a valid [SILO](https://github.com/ngageoint/seed-silo) instance.
 * `importUrl` (optional): URL of the algorithm import location of a [Scale](https://github.com/ngageoint/scale) instance.
 * `router` (optional): reference to an Angular 5 router object.
