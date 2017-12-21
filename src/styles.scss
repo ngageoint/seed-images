@@ -1,0 +1,14 @@
+@charset "utf-8";
+
+// Defaults
+@import './defaults/animations';
+@import './defaults/colors';
+@import './defaults/primeng-theme';
+@import './defaults/tags';
+@import './defaults/typography';
+
+// Overrides
+@import './defaults/overrides';
+
+// Components & Pages loaded separately
+

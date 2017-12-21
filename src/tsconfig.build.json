@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "baseUrl": "",
+        "declaration": true,
+        "stripInternal": true,
+        "experimentalDecorators": true,
+        "strictNullChecks": true,
+        "noImplicitAny": false,
+        "module": "es2015",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "paths": {
+            "@angular/core": [
+                "node_modules/@angular/core"
+            ],
+            "@angular/common": [
+                "node_modules/@angular/common"
+            ],
+            "rxjs/*": [
+                "node_modules/rxjs/*"
+            ]
+        },
+        "rootDir": "app/seed-images",
+        "outDir": "../dist",
+        "sourceMap": true,
+        "inlineSources": true,
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "target": "es5",
+        "skipLibCheck": true,
+        "lib": [
+            "es2017",
+            "dom"
+        ]
+    },
+    "files": [
+        "./app/seed-images/index.ts"
+    ],
+    "angularCompilerOptions": {
+        "strictMetadataEmit": true
+    }
+}

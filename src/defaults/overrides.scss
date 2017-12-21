@@ -1,0 +1,28 @@
+.ui-steps .ui-steps-item {
+    float: none;
+}
+.ui-message {
+    margin: 0;
+}
+.ui-accordion .ui-accordion-header a {
+    text-decoration: none;
+}
+.ui-accordion .ui-accordion-header.ui-state-active {
+    background: #f6f7f9;
+    border-color: #d9d9d9;
+    border-radius: 3px;
+}
+.ui-datagrid-content {
+    border: none !important;
+    background: none !important;
+}
+
+.nopadding .ui-datatable-data > tr > td {
+    padding: 0;
+}
+
+.angular-utc-datepicker_button {
+    padding: 6px !important;
+    border: 1px solid #ccc;
+    border-radius: 0;
+}

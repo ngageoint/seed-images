@@ -5,12 +5,9 @@ export default {
         format: 'umd'
     },
 	sourceMap: false,
-    external: ['@angular/core', '@angular/common', '@angular/forms', '@angular/http'],
+    external: ['@angular/core', '@angular/common', '@angular/forms', '@angular/common/http'],
 	name: 'ng.seed-images',
     plugins: [
-        // rollup needs import moment from 'moment'
-        // https://github.com/rollup/rollup-plugin-typescript/issues/68
-        // https://github.com/moment/moment/issues/3748
         {
             name: 'replace clipboard imports',
             transform: code =>
