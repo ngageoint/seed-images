@@ -129,7 +129,6 @@ import 'rxjs/add/operator/toPromise';
 })
 export class SeedImagesComponent implements OnInit {
     @Input() environment: any;
-    @Input() apiUrl: string;
     @Input() importUrl: string;
     @Input() router: any;
     images: any[] = [];
@@ -161,7 +160,7 @@ export class SeedImagesComponent implements OnInit {
 
     getImages(): Promise<any> {
         this.loading = true;
-        return this.http.get(`${this.apiUrl}/images`)
+        return this.http.get(`${this.environment.siloUrl}/images`)
             .toPromise()
             .then(response => {
                 this.loading = false;
@@ -174,7 +173,7 @@ export class SeedImagesComponent implements OnInit {
 
     searchImages(query): Promise<any> {
         this.loading = true;
-        return this.http.get(`${this.apiUrl}/images/search/${query}`)
+        return this.http.get(`${this.environment.siloUrl}/images/search/${query}`)
             .toPromise()
             .then(response => {
                 this.loading = false;
@@ -187,7 +186,7 @@ export class SeedImagesComponent implements OnInit {
 
     getImageManifest(id): Promise<any> {
         this.importBtnIcon = 'fa-spinner fa-spin';
-        return this.http.get(`${this.apiUrl}/images/${id}/manifest`)
+        return this.http.get(`${this.environment.siloUrl}/images/${id}/manifest`)
             .toPromise()
             .then(response => {
                 this.importBtnIcon = 'fa-cloud-download';
