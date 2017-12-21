@@ -11,15 +11,15 @@ import 'rxjs/add/operator/toPromise';
     template: `
         <div class="seed-images">
             <div class="search">
-                <p-autoComplete [(ngModel)]="image" (completeMethod)="filterImages($event)" field="Name" styleClass="search-input"
-                                placeholder="Search Images" [minLength]="0"></p-autoComplete>
+                <p-autoComplete [(ngModel)]="image" (completeMethod)="filterImages($event)" field="Name"
+                                styleClass="search-input" placeholder="Search Images" [minLength]="0"></p-autoComplete>
                 <div class="loader" *ngIf="loading">
-                    <svg version="1.1" id="loader" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                         x="0px" y="0px" width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;"
-                         xml:space="preserve">
-                        <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,
-                                             18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,
-                                             14.615H43.935z">
+                    <svg version="1.1" id="loader" xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
+                         viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                        <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,
+                                             8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,
+                                             14.615,6.543,14.615,14.615H43.935z">
                             <animateTransform attributeType="xml"
                                               attributeName="transform"
                                               type="rotate"
@@ -37,7 +37,8 @@ import 'rxjs/add/operator/toPromise';
                     <ng-template let-image pTemplate="item">
                         <div class="ui-g-12 ui-md-3">
                             <a (click)="showImageDetails(image)">
-                                <p-panel [header]="image.Name" [style]="{'text-align':'center'}">
+                                <p-panel [header]="image.Title + ' v' + image.JobVersion"
+                                         [style]="{'text-align':'center'}">
                                     {{ image.Org }}<br />
                                     {{ image.Registry }}
                                 </p-panel>
@@ -45,13 +46,17 @@ import 'rxjs/add/operator/toPromise';
                         </div>
                     </ng-template>
                 </p-dataGrid>
-                <p-dialog *ngIf="currImage" [header]="currImage.Name" [(visible)]="showDialog" (onHide)="hideImageDetails()"
-                          [responsive]="true" [dismissableMask]="true" [modal]="true" positionTop="40" class="image-details">
-                    <h2>{{ currImage.Title }} v{{ currImage.JobVersion }}</h2>
+                <p-dialog *ngIf="currImage" [header]="currImage.Title + ' v' + currImage.JobVersion"
+                          [(visible)]="showDialog" (onHide)="hideImageDetails()" [responsive]="true"
+                          [dismissableMask]="true" [modal]="true" positionTop="40" class="image-details">
                     {{ currImage.Description }}
+                    <div class="header">
+                        Manifest
+                        <button class="copy-btn ui-button-secondary" pButton type="button" (click)="onCopyClick()" icon="fa-copy"
+                                pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
+                        </button>
+                    </div>
                     <div *ngIf="!environment.scale && imageManifest" class="code">
-                        <button class="copy-btn" pButton type="button" (click)="onCopyClick()" icon="fa-copy" pTooltip="Copy to clipboard"
-                                tooltipPosition="left" data-clipboard-target="#manifest"></button>
                         <pre id="manifest"><code>{{ imageManifest }}</code></pre>
                     </div>
                     <p-footer *ngIf="environment.scale">
@@ -102,13 +107,21 @@ import 'rxjs/add/operator/toPromise';
         .seed-images .image-details h2 {
             font-size: 1.2em;
         }
+        .seed-images .image-details .header {
+            position: relative;
+            margin: 12px 0 0 0;
+            padding: 12px;
+            background: #777;
+            color: #fff;
+        }
+        .seed-images .image-details .header button {
+            position: absolute;
+            top: 5px;
+            right: 4px;
+        }
         .seed-images .image-details .code {
             position: relative;
-        }
-        .seed-images .image-details .code button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            margin-top: -14px;
         }
         .seed-images .image-details .code pre {
             width: 100%;
