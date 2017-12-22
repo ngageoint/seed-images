@@ -110,7 +110,7 @@ import 'rxjs/add/operator/toPromise';
         .seed-images .image-details .header {
             position: relative;
             margin: 12px 0 0 0;
-            padding: 12px;
+            padding: 6px;
             background: #777;
             color: #fff;
         }
@@ -118,6 +118,8 @@ import 'rxjs/add/operator/toPromise';
             position: absolute;
             top: 5px;
             right: 4px;
+            padding: 0;
+            font-size: 0.8em;
         }
         .seed-images .image-details .code {
             position: relative;
