@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Message } from 'primeng/primeng';
 import * as beautify from 'js-beautify';
@@ -52,9 +52,8 @@ import 'rxjs/add/operator/toPromise';
                     {{ currImage.Description }}
                     <div class="header">
                         Manifest
-                        <button class="copy-btn ui-button-secondary" pButton type="button" (click)="onCopyClick()"
-                                icon="fa-copy" pTooltip="Copy to clipboard" tooltipPosition="left"
-                                data-clipboard-target="#manifest">
+                        <button class="copy-btn ui-button-secondary" pButton type="button" icon="fa-copy"
+                                pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
                         </button>
                     </div>
                     <div class="code">
@@ -145,8 +144,7 @@ import 'rxjs/add/operator/toPromise';
 })
 export class SeedImagesComponent implements OnInit {
     @Input() environment: any;
-    @Input() importUrl: string;
-    @Input() router: any;
+    @Output() imageImport = new EventEmitter<any>();
     images: any[] = [];
     image: any;
     imageManifest: any;
@@ -243,14 +241,10 @@ export class SeedImagesComponent implements OnInit {
         this.currImage = null;
     }
 
-    onCopyClick(): void {
-
-    }
-
     onImportClick(): void {
-        // send to algorithm import form
-        localStorage.setItem(`${this.currImage.Name}`, JSON.stringify(this.imageManifest));
-        this.router.navigate([this.importUrl], { queryParams: { image: this.currImage.name } });
+        // emit with manifest json
+        this.imageImport.emit(this.currImage);
+        this.hideImageDetails();
     }
 
     ngOnInit() {

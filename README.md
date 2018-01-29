@@ -11,17 +11,16 @@ An Angular component for [Seed](https://ngageoint.github.io/seed/) image discove
 * [ClipboardJS](https://clipboardjs.com/)
 * [JS-Beautify](https://github.com/beautify-web/js-beautify)
 
-## How to use
-* Import into app module: `import { SeedImagesModule } from 'seed-images';`
-* `environment` (required): reference to an Angular environment object (see below).
-* `importUrl` (optional): URL of the algorithm import location of a [Scale](https://github.com/ngageoint/scale) instance.
-* `router` (optional): reference to an Angular 5 router object.
-
 ## Environment
 The seed-images component expects two environment properties to be set:
 
-* `scale`: In order for the component to properly display either the seed manifest JSON or a Scale import button, a `scale` property *must* be set in the project's environment object. The value should be `true` if the project also contains Scale algorithm import functionality. Otherwise the value should be `false`.
+* `scale`: In order for the component to properly display either the seed manifest JSON or a Scale import button, a `scale` property *must* be set in the project's environment object. The value should be `true` if seed-images is being used within a Scale UI.
 * `siloUrl`: The URL of a valid [SILO](https://github.com/ngageoint/seed-silo) instance.
+
+## How to use
+* Import into app module: `import { SeedImagesModule } from 'seed-images';`
+* `environment` (required): reference to an Angular environment object (see above).
+* `imageImport`: event emitted when the "Import" button is clicked. Its payload is the image manifest JSON.
 
 ### environments/environment.ts
 ```
@@ -49,6 +48,11 @@ import { environment } from '../environments/environment';
 export class AppComponent {
   env = environment;
   constructor() {}
+  
+  // method to handle image import if scale environment var is true
+  onImageImport(image) {
+    console.log(image);
+  }
   ...
 }
 ```
@@ -57,7 +61,7 @@ export class AppComponent {
 ```
 <seed-images [environment]="env"></seed-images>
 ```
-or (if `scale: true`)
+or, if `scale: true`
 ```
-<seed-images [environment]="env" importUrl="/configuration/job-types/edit/0" [router]="router"></seed-images>
+<seed-images [environment]="env" (imageImport)="onImageImport($event)"></seed-images>
 ```
