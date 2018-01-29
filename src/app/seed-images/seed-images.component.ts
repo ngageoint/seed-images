@@ -57,9 +57,9 @@ import 'rxjs/add/operator/toPromise';
                         </button>
                     </div>
                     <div class="code">
-                        <pre id="manifest"><code>{{ imageManifest }}</code></pre>
+                        <pre id="manifest"><code>{{ imageManifestDisplay }}</code></pre>
                     </div>
-                    <p-footer *ngIf="environment.scale">
+                    <p-footer *ngIf="environment.scale && imageManifest">
                         <button pButton type="button" (click)="onImportClick()" label="Import" [icon]="importBtnIcon"
                                 iconPos="right"></button>
                     </p-footer>
@@ -148,6 +148,7 @@ export class SeedImagesComponent implements OnInit {
     images: any[] = [];
     image: any;
     imageManifest: any;
+    imageManifestDisplay: any;
     loading: boolean;
     showDialog = false;
     currImage: any;
@@ -231,7 +232,8 @@ export class SeedImagesComponent implements OnInit {
         this.currImage = image;
         this.showDialog = true;
         this.getImageManifest(this.currImage.ID).then(data => {
-            this.imageManifest = beautify(JSON.stringify(data));
+            this.imageManifest = data;
+            this.imageManifestDisplay = beautify(JSON.stringify(data));
         }).catch(err => {
             this.handleError(err, 'Manifest Retrieval Failed');
         });
@@ -243,7 +245,7 @@ export class SeedImagesComponent implements OnInit {
 
     onImportClick(): void {
         // emit with manifest json
-        this.imageImport.emit(this.currImage);
+        this.imageImport.emit(this.imageManifest);
         this.hideImageDetails();
     }
 
