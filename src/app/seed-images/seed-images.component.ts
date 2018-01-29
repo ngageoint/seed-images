@@ -52,11 +52,12 @@ import 'rxjs/add/operator/toPromise';
                     {{ currImage.Description }}
                     <div class="header">
                         Manifest
-                        <button class="copy-btn ui-button-secondary" pButton type="button" (click)="onCopyClick()" icon="fa-copy"
-                                pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
+                        <button class="copy-btn ui-button-secondary" pButton type="button" (click)="onCopyClick()"
+                                icon="fa-copy" pTooltip="Copy to clipboard" tooltipPosition="left"
+                                data-clipboard-target="#manifest">
                         </button>
                     </div>
-                    <div *ngIf="!environment.scale && imageManifest" class="code">
+                    <div class="code">
                         <pre id="manifest"><code>{{ imageManifest }}</code></pre>
                     </div>
                     <p-footer *ngIf="environment.scale">
