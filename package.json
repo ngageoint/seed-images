@@ -1,6 +1,6 @@
 {
     "name": "seed-images",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "Angular component for Seed image discovery",
     "scripts": {
         "ng": "ng",
