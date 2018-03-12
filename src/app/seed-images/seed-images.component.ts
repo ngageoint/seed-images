@@ -32,15 +32,15 @@ import 'rxjs/add/operator/toPromise';
                 </div>
             </div>
             <div class="results">
-                <h3>{{ images.length }} image(s) found</h3>
-                <p-dataGrid [value]="images">
-                    <ng-template let-image pTemplate="item">
+                <h3>{{ jobs.length }} job(s) found</h3>
+                <p-dataGrid [value]="jobs">
+                    <ng-template let-job pTemplate="item">
                         <div class="ui-g-12 ui-md-3">
-                            <a (click)="showImageDetails(image)">
-                                <p-panel [header]="image.Title + ' v' + image.JobVersion"
+                            <a (click)="showImageDetails(job)">
+                                <p-panel [header]="job.Title"
                                          [style]="{'text-align':'center'}">
-                                    {{ image.Org }}<br />
-                                    {{ image.Registry }}
+                                    {{ job.Maintainer }}<br />
+                                    {{ job.Description }}
                                 </p-panel>
                             </a>
                         </div>
@@ -145,6 +145,7 @@ import 'rxjs/add/operator/toPromise';
 export class SeedImagesComponent implements OnInit {
     @Input() environment: any;
     @Output() imageImport = new EventEmitter<any>();
+    jobs: any[] = [];
     images: any[] = [];
     image: any;
     imageManifest: any;
@@ -171,6 +172,19 @@ export class SeedImagesComponent implements OnInit {
         this.msgs.push({severity: 'error', summary: summary || 'Error', detail: detail});
         this.importBtnIcon = 'fa-cloud-download';
         this.loading = false;
+    }
+
+    getJobs(): Promise<any> {
+        this.loading = true;
+        return this.http.get(`${this.environment.siloUrl}/jobs`)
+            .toPromise()
+            .then(response => {
+                this.loading = false;
+                return Promise.resolve(response);
+            })
+            .catch(err => {
+                return Promise.reject(err);
+            });
     }
 
     getImages(): Promise<any> {
@@ -250,10 +264,10 @@ export class SeedImagesComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getImages().then(data => {
-            this.images = data;
+        this.getJobs().then(data => {
+            this.jobs = data;
         }).catch(err => {
-            this.handleError(err, 'Image Retrieval Failed');
+            this.handleError(err, 'Job Retrieval Failed');
         });
         this.clipboard.on('success', () => {
             this.msgs = [{severity: 'success', summary: 'Success!', detail: 'Manifest JSON copied to clipboard.'}];
