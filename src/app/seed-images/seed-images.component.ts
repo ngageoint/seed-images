@@ -35,21 +35,21 @@ import 'rxjs/add/operator/toPromise';
                 <h3>{{ jobs.length }} job(s) found</h3>
                 <p-dataGrid [value]="jobs">
                     <ng-template let-job pTemplate="item">
-                        <div class="ui-g-12 ui-md-3">
-                            <a (click)="showImageDetails(job)">
-                                <p-panel [header]="job.Title"
-                                         [style]="{'text-align':'center'}">
-                                    {{ job.Maintainer }}<br />
-                                    {{ job.Description }}
+                        <div class="ui-g-12 ui-md-3"  [pTooltip]="job.Description" appendTo="body"
+                             tooltipPosition="bottom">
+                            <a (click)="showJobDetails(job)">
+                                <p-panel [header]="job.Title">
+                                    {{ job.Description }}<br />
+                                    <strong>Maintainer:</strong> {{ job.Maintainer }}
                                 </p-panel>
                             </a>
                         </div>
                     </ng-template>
                 </p-dataGrid>
-                <p-dialog *ngIf="currImage" [header]="currImage.Title + ' v' + currImage.JobVersion"
-                          [(visible)]="showDialog" (onHide)="hideImageDetails()" [responsive]="true"
-                          [dismissableMask]="true" [modal]="true" positionTop="40" class="image-details">
-                    {{ currImage.Description }}
+                <p-dialog *ngIf="currJob" [header]="currJob.Title"
+                          [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
+                          [dismissableMask]="true" [modal]="true" positionTop="40" class="job-details">
+                    {{ currJob.Description }}
                     <div class="header">
                         Manifest
                         <button class="copy-btn ui-button-secondary" pButton type="button" icon="fa-copy"
@@ -104,34 +104,40 @@ import 'rxjs/add/operator/toPromise';
             text-align: center;
             margin: 18px 0;
         }
-        .seed-images .image-details h2 {
+        .seed-images .job-details h2 {
             font-size: 1.2em;
         }
-        .seed-images .image-details .header {
+        .seed-images .job-details .header {
             position: relative;
             margin: 12px 0 0 0;
             padding: 6px;
             background: #777;
             color: #fff;
         }
-        .seed-images .image-details .header button {
+        .seed-images .job-details .header button {
             position: absolute;
             top: 5px;
             right: 4px;
             padding: 0;
             font-size: 0.8em;
         }
-        .seed-images .image-details .code {
+        .seed-images .job-details .code {
             position: relative;
             margin-top: -14px;
         }
-        .seed-images .image-details .code pre {
+        .seed-images .job-details .code pre {
             width: 100%;
             max-height: 300px;
             overflow-x: hidden;
             background: #efefef;
             border: 1px solid #bbb;
             font-size: 0.9em;
+        }
+        ::ng-deep .seed-images .results .ui-panel .ui-panel-content {
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
         ::ng-deep .seed-images .results .ui-panel:hover {
             background: #48ACFF;
@@ -152,7 +158,7 @@ export class SeedImagesComponent implements OnInit {
     imageManifestDisplay: any;
     loading: boolean;
     showDialog = false;
-    currImage: any;
+    currJob: any;
     importBtnIcon = 'fa-cloud-download';
     clipboard = new Clipboard('.copy-btn');
     msgs: Message[] = [];
@@ -242,10 +248,10 @@ export class SeedImagesComponent implements OnInit {
         }
     }
 
-    showImageDetails(image): void {
-        this.currImage = image;
+    showJobDetails(job): void {
+        this.currJob = job;
         this.showDialog = true;
-        this.getImageManifest(this.currImage.ID).then(data => {
+        this.getImageManifest(this.currJob.ID).then(data => {
             this.imageManifest = data;
             this.imageManifestDisplay = beautify(JSON.stringify(data));
         }).catch(err => {
@@ -253,14 +259,14 @@ export class SeedImagesComponent implements OnInit {
         });
     }
 
-    hideImageDetails(): void {
-        this.currImage = null;
+    hideJobDetails(): void {
+        this.currJob = null;
     }
 
     onImportClick(): void {
         // emit with manifest json
         this.imageImport.emit(this.imageManifest);
-        this.hideImageDetails();
+        this.hideJobDetails();
     }
 
     ngOnInit() {
