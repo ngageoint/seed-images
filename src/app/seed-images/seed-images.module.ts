@@ -9,6 +9,7 @@ import {
     ButtonModule,
     DataGridModule,
     DialogModule,
+    DropdownModule,
     GrowlModule,
     PanelModule,
     TooltipModule
@@ -24,6 +25,7 @@ import {
         ButtonModule,
         DataGridModule,
         DialogModule,
+        DropdownModule,
         GrowlModule,
         PanelModule,
         TooltipModule

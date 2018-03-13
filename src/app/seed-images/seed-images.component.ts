@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Message } from 'primeng/primeng';
+import * as _ from 'lodash';
 import * as beautify from 'js-beautify';
 import * as Clipboard from 'clipboard';
 
 import 'rxjs/add/operator/toPromise';
+import {SelectItem} from "primeng/api";
 
 @Component({
     selector: 'seed-images',
@@ -46,9 +48,13 @@ import 'rxjs/add/operator/toPromise';
                         </div>
                     </ng-template>
                 </p-dataGrid>
-                <p-dialog *ngIf="currJob" [header]="currJob.Title"
-                          [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
+                <p-dialog *ngIf="currJob" [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
                           [dismissableMask]="true" [modal]="true" positionTop="40" class="job-details">
+                    <p-header>
+                        {{ currJob.Title }}
+                        <p-dropdown [options]="images" [(ngModel)]="image" [showClear]="false">
+                        </p-dropdown>
+                    </p-header>
                     {{ currJob.Description }}
                     <div class="header">
                         Manifest
@@ -152,7 +158,7 @@ export class SeedImagesComponent implements OnInit {
     @Input() environment: any;
     @Output() imageImport = new EventEmitter<any>();
     jobs: any[] = [];
-    images: any[] = [];
+    images: SelectItem[] = [];
     image: any;
     imageManifest: any;
     imageManifestDisplay: any;
@@ -251,7 +257,15 @@ export class SeedImagesComponent implements OnInit {
     showJobDetails(job): void {
         this.currJob = job;
         this.showDialog = true;
-        this.getImageManifest(this.currJob.ID).then(data => {
+        const imagesArr = _.flatten(_.map(job.JobVersions, 'Images'));
+        _.forEach(imagesArr, image => {
+            this.images.push({
+                label: `${image.JobVersion}, ${image.PackageVersion}`,
+                value: image
+            });
+        });
+        this.image = _.find(imagesArr, { ID: _.max(job.ImageIDs) });
+        this.getImageManifest(this.image.ID).then(data => {
             this.imageManifest = data;
             this.imageManifestDisplay = beautify(JSON.stringify(data));
         }).catch(err => {
