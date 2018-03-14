@@ -6,15 +6,14 @@ import * as beautify from 'js-beautify';
 import * as Clipboard from 'clipboard';
 
 import 'rxjs/add/operator/toPromise';
-import {SelectItem} from "primeng/api";
 
 @Component({
     selector: 'seed-images',
     template: `
-        <div class="seed-images">
+        <div class="seed-jobs">
             <div class="search">
-                <p-autoComplete [(ngModel)]="image" (completeMethod)="filterImages($event)" field="Name"
-                                styleClass="search-input" placeholder="Search Images" [minLength]="0"></p-autoComplete>
+                <p-autoComplete [(ngModel)]="jobQueryResult" (completeMethod)="filterJobs($event)" field="Name"
+                                styleClass="search-input" placeholder="Search Jobs" [minLength]="0"></p-autoComplete>
                 <div class="loader" *ngIf="loading">
                     <svg version="1.1" id="loader" xmlns="http://www.w3.org/2000/svg"
                          xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
@@ -34,11 +33,10 @@ import {SelectItem} from "primeng/api";
                 </div>
             </div>
             <div class="results">
-                <h3>{{ jobs.length }} job(s) found</h3>
+                <h3>{{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found</h3>
                 <p-dataGrid [value]="jobs">
                     <ng-template let-job pTemplate="item">
-                        <div class="ui-g-12 ui-md-3"  [pTooltip]="job.Description" appendTo="body"
-                             tooltipPosition="bottom">
+                        <div class="ui-g-12 ui-md-3">
                             <a (click)="showJobDetails(job)">
                                 <p-panel [header]="job.Title">
                                     {{ job.Description }}<br />
@@ -48,14 +46,18 @@ import {SelectItem} from "primeng/api";
                         </div>
                     </ng-template>
                 </p-dataGrid>
-                <p-dialog *ngIf="currJob" [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
-                          [dismissableMask]="true" [modal]="true" positionTop="40" class="job-details">
+                <p-dialog *ngIf="selectedJob" [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
+                          [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
                     <p-header>
-                        {{ currJob.Title }}
-                        <p-dropdown [options]="images" [(ngModel)]="image" [showClear]="false">
+                        {{ selectedJob.Title }}
+                        <p-dropdown [options]="jobVersions" optionLabel="MajorVersion" [(ngModel)]="selectedJobVersion"
+                                    (onChange)="updateImages()" [showClear]="false">
+                        </p-dropdown>
+                        <p-dropdown [options]="images" optionLabel="PackageVersion" [(ngModel)]="selectedImage"
+                                    (onChange)="updateImageManifest()" [showClear]="false">
                         </p-dropdown>
                     </p-header>
-                    {{ currJob.Description }}
+                    {{ selectedJob.Description }}
                     <div class="header">
                         Manifest
                         <button class="copy-btn ui-button-secondary" pButton type="button" icon="fa-copy"
@@ -80,58 +82,61 @@ import {SelectItem} from "primeng/api";
                 transform: rotate(1440deg);
             }
         }
-        .seed-images .search {
+        .seed-jobs .search {
             position: relative;
             text-align: center;
             width: 50%;
             margin: 0 auto 15px auto;
         }
-        ::ng-deep .seed-images .search-input {
+        ::ng-deep .seed-jobs .search-input {
             width: 100%;
         }
-        ::ng-deep .seed-images .ui-autocomplete-input {
+        ::ng-deep .seed-jobs .ui-autocomplete-input {
             width: 100%;
         }
-        .seed-images .search .loader {
+        .seed-jobs .search .loader {
             position: absolute;
             top: 7px;
             right: 20px;
         }
-        .seed-images .search .loader svg path, .seed-images .search .loader svg rect {
+        .seed-jobs .search .loader svg path, .seed-jobs .search .loader svg rect {
             fill: #FF6700;
         }
-        ::ng-deep .seed-images .search .ui-inputtext {
+        ::ng-deep .seed-jobs .search .ui-inputtext {
             font-size: 1.5em !important;
         }
-        ::ng-deep .seed-images .search .ui-autocomplete-loader {
+        ::ng-deep .seed-jobs .search .ui-autocomplete-loader {
             display: none;
         }
-        .seed-images .results h3 {
+        .seed-jobs .results h3 {
             text-align: center;
             margin: 18px 0;
         }
-        .seed-images .job-details h2 {
+        .seed-jobs .job-details {
+            width: 33%;
+        }
+        .seed-jobs .job-details h2 {
             font-size: 1.2em;
         }
-        .seed-images .job-details .header {
+        .seed-jobs .job-details .header {
             position: relative;
             margin: 12px 0 0 0;
             padding: 6px;
             background: #777;
             color: #fff;
         }
-        .seed-images .job-details .header button {
+        .seed-jobs .job-details .header button {
             position: absolute;
             top: 5px;
             right: 4px;
             padding: 0;
             font-size: 0.8em;
         }
-        .seed-images .job-details .code {
+        .seed-jobs .job-details .code {
             position: relative;
             margin-top: -14px;
         }
-        .seed-images .job-details .code pre {
+        .seed-jobs .job-details .code pre {
             width: 100%;
             max-height: 300px;
             overflow-x: hidden;
@@ -139,18 +144,21 @@ import {SelectItem} from "primeng/api";
             border: 1px solid #bbb;
             font-size: 0.9em;
         }
-        ::ng-deep .seed-images .results .ui-panel .ui-panel-content {
+        ::ng-deep .seed-jobs .results .ui-panel .ui-panel-content {
             text-align: center;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
         }
-        ::ng-deep .seed-images .results .ui-panel:hover {
+        ::ng-deep .seed-jobs .results .ui-panel:hover {
             background: #48ACFF;
             transition: background-color 0.5s;
         }
-        ::ng-deep .seed-images .results .ui-dialog {
-            width: 35% !important;
+        ::ng-deep .seed-jobs .results .ui-dialog {
+            width: 50% !important;
+        }
+        ::ng-deep .seed-jobs .results .ui-dropdown {
+            font-size: 0.7em !important;
         }
     `]
 })
@@ -158,13 +166,16 @@ export class SeedImagesComponent implements OnInit {
     @Input() environment: any;
     @Output() imageImport = new EventEmitter<any>();
     jobs: any[] = [];
-    images: SelectItem[] = [];
-    image: any;
+    selectedJob: any;
+    jobQueryResult: any;
+    jobVersions: any[] = [];
+    selectedJobVersion: any;
+    images: any[] = [];
+    selectedImage: any;
     imageManifest: any;
     imageManifestDisplay: any;
     loading: boolean;
     showDialog = false;
-    currJob: any;
     importBtnIcon = 'fa-cloud-download';
     clipboard = new Clipboard('.copy-btn');
     msgs: Message[] = [];
@@ -199,22 +210,9 @@ export class SeedImagesComponent implements OnInit {
             });
     }
 
-    getImages(): Promise<any> {
+    searchJobs(query): Promise<any> {
         this.loading = true;
-        return this.http.get(`${this.environment.siloUrl}/images`)
-            .toPromise()
-            .then(response => {
-                this.loading = false;
-                return Promise.resolve(response);
-            })
-            .catch(err => {
-                return Promise.reject(err);
-            });
-    }
-
-    searchImages(query): Promise<any> {
-        this.loading = true;
-        return this.http.get(`${this.environment.siloUrl}/images/search/${query}`)
+        return this.http.get(`${this.environment.siloUrl}/jobs/search/${query}`)
             .toPromise()
             .then(response => {
                 this.loading = false;
@@ -238,34 +236,24 @@ export class SeedImagesComponent implements OnInit {
             });
     }
 
-    filterImages(event): void {
+    filterJobs(event): void {
         if (event.query) {
-            this.searchImages(event.query).then(data => {
-                this.images = data;
+            this.searchJobs(event.query).then(data => {
+                this.jobs = data;
             }).catch(err => {
-                this.handleError(err, 'Image Search Failed');
+                this.handleError(err, 'Job Search Failed');
             });
         } else {
-            this.getImages().then(data => {
-                this.images = data;
+            this.getJobs().then(data => {
+                this.jobs = data;
             }).catch(err => {
-                this.handleError(err, 'Image Retrieval Failed');
+                this.handleError(err, 'Job Retrieval Failed');
             });
         }
     }
 
-    showJobDetails(job): void {
-        this.currJob = job;
-        this.showDialog = true;
-        const imagesArr = _.flatten(_.map(job.JobVersions, 'Images'));
-        _.forEach(imagesArr, image => {
-            this.images.push({
-                label: `${image.JobVersion}, ${image.PackageVersion}`,
-                value: image
-            });
-        });
-        this.image = _.find(imagesArr, { ID: _.max(job.ImageIDs) });
-        this.getImageManifest(this.image.ID).then(data => {
+    updateImageManifest(): void {
+        this.getImageManifest(this.selectedImage.ID).then(data => {
             this.imageManifest = data;
             this.imageManifestDisplay = beautify(JSON.stringify(data));
         }).catch(err => {
@@ -273,8 +261,22 @@ export class SeedImagesComponent implements OnInit {
         });
     }
 
+    updateImages(): void {
+        this.images = _.orderBy(this.selectedJobVersion.Images, ['PackageVersion'], ['desc']);
+        this.selectedImage = this.images[0];
+        this.updateImageManifest();
+    }
+
+    showJobDetails(job): void {
+        this.selectedJob = job;
+        this.showDialog = true;
+        this.jobVersions = _.orderBy(job.JobVersions, ['MajorVersion'], ['desc']);
+        this.selectedJobVersion = this.jobVersions[0];
+        this.updateImages();
+    }
+
     hideJobDetails(): void {
-        this.currJob = null;
+        this.selectedJob = null;
     }
 
     onImportClick(): void {
