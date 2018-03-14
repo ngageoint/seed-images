@@ -12,7 +12,7 @@
         "clean": "rimraf .tmp && rimraf dist",
         "transpile": "ngc -p ./src/tsconfig.build.json",
         "package": "rollup -c",
-        "minify": "./node_modules/uglify-js/bin/uglifyjs dist/bundles/seed-images.umd.js --screw-ie8 --compress --mangle--comments--output dist/bundles/seed-images.umd.min.js",
+        "minify": "uglifyjs dist/bundles/seed-images.umd.js --screw-ie8 --compress --mangle--comments--output dist/bundles/seed-images.umd.min.js",
         "copy": "cpx './package-dist.json' dist && renamer --find 'package-dist.json' --replace 'package.json' ./dist/* && cpx './readme.md' dist",
         "build": "npm run clean && npm run transpile && npm run package && npm run minify && npm run copy"
     },
