@@ -5,7 +5,7 @@ export default {
         format: 'umd'
     },
 	sourceMap: false,
-    external: ['@angular/core', '@angular/common', '@angular/forms', '@angular/common/http'],
+    external: ['@angular/core', '@angular/common', '@angular/forms', '@angular/common/http', 'js-beautify', 'clipboard', 'rxjs/add/operator/toPromise', 'primeng/primeng'],
 	name: 'ng.seed-images',
     plugins: [
         {
@@ -29,7 +29,7 @@ export default {
 	    '@angular/core': 'ng.core',
 		'@angular/common': 'ng.common',
 		'@angular/forms': 'ng.forms',
-		'@angular/http': 'ng.http',
+		'@angular/common/http': 'ng.httpClient',
         '@angular/platform-browser': 'ng.platform-browser',
 		'rxjs/Observable': 'Rx',
 		'rxjs/ReplaySubject': 'Rx',
@@ -39,6 +39,7 @@ export default {
 		'rxjs/add/observable/of': 'Rx.Observable',
         'clipboard': 'clipboard',
         'js-beautify': 'js-beautify',
+		'primeng/primeng': 'primeng',
         'primeng': 'primeng'
 	}
 }
