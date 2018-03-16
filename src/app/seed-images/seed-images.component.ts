@@ -35,11 +35,14 @@ import 'rxjs/add/operator/toPromise';
                 <h3>{{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found</h3>
                 <p-dataGrid [value]="jobs">
                     <ng-template let-job pTemplate="item">
-                        <div class="ui-g-12 ui-md-3">
+                        <div class="ui-g-12 ui-md-4">
                             <a (click)="showJobDetails(job)">
                                 <p-panel [header]="job.Title">
                                     {{ job.Description }}<br />
-                                    <strong>Maintainer:</strong> {{ job.Maintainer }}
+                                    <strong>Maintainer:</strong> {{ job.Maintainer }}<br />
+                                    <span *ngIf="job.MaintOrg">
+                                        <strong>Organization:</strong> {{ job.MaintOrg }}
+                                    </span>
                                 </p-panel>
                             </a>
                         </div>
@@ -49,11 +52,13 @@ import 'rxjs/add/operator/toPromise';
                           [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
                     <p-header>
                         {{ selectedJob.Title }}
-                        <p-dropdown [options]="jobVersions" optionLabel="MajorVersion" [(ngModel)]="selectedJobVersion"
-                                    (onChange)="updateImages()" [showClear]="false">
+                        <p-dropdown [options]="jobVersions" optionLabel="JobVersion" [(ngModel)]="selectedJobVersion"
+                                    (onChange)="updateImages()" [showClear]="false" [filter]="true" [autoWidth]="false">
                         </p-dropdown>
+                        <button pButton class="ui-button-secondary" icon="fa-cube" pTooltip="Package version..."
+                                (click)="choosePackage()" *ngIf="!showPackageDropdown"></button>
                         <p-dropdown [options]="images" optionLabel="PackageVersion" [(ngModel)]="selectedImage"
-                                    (onChange)="updateImageManifest()" [showClear]="false">
+                                    (onChange)="updateImageManifest()" [showClear]="false" *ngIf="showPackageDropdown">
                         </p-dropdown>
                     </p-header>
                     {{ selectedJob.Description }}
@@ -148,6 +153,7 @@ import 'rxjs/add/operator/toPromise';
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+            min-height: 110px;
         }
         ::ng-deep .seed-jobs .results .ui-panel:hover {
             background: #48ACFF;
@@ -157,6 +163,10 @@ import 'rxjs/add/operator/toPromise';
             width: 50% !important;
         }
         ::ng-deep .seed-jobs .results .ui-dropdown {
+            font-size: 0.7em !important;
+            width: 150px;
+        }
+        ::ng-deep .seed-jobs .results .ui-button {
             font-size: 0.7em !important;
         }
     `]
@@ -178,6 +188,7 @@ export class SeedImagesComponent implements OnInit {
     importBtnIcon = 'fa-cloud-download';
     clipboard = new Clipboard('.copy-btn');
     msgs: Message[] = [];
+    showPackageDropdown = false;
 
     constructor(
         private http: HttpClient
@@ -264,7 +275,6 @@ export class SeedImagesComponent implements OnInit {
         this.images = this.selectedJobVersion.Images.sort((a, b) => {
             return a.PackageVersion - b.PackageVersion;
         }).reverse();
-        // this.images = this.selectedJobVersion.Images, ['PackageVersion'], ['desc']);
         this.selectedImage = this.images[0];
         this.updateImageManifest();
     }
@@ -273,21 +283,25 @@ export class SeedImagesComponent implements OnInit {
         this.selectedJob = job;
         this.showDialog = true;
         this.jobVersions = job.JobVersions.sort((a, b) => {
-            return a.MajorVersion - b.MajorVersion;
+            return a.JobVersion - b.JobVersion;
         }).reverse();
-        // this.jobVersions = _.orderBy(job.JobVersions, ['MajorVersion'], ['desc']);
         this.selectedJobVersion = this.jobVersions[0];
         this.updateImages();
     }
 
     hideJobDetails(): void {
         this.selectedJob = null;
+        this.showPackageDropdown = false;
     }
 
     onImportClick(): void {
         // emit with manifest json
         this.imageImport.emit(this.imageManifest);
         this.hideJobDetails();
+    }
+
+    choosePackage(): void {
+        this.showPackageDropdown = true;
     }
 
     ngOnInit() {
