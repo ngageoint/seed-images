@@ -249,7 +249,9 @@ export class SeedImagesComponent implements OnInit {
     filterJobs(event): void {
         if (event.query) {
             this.searchJobs(event.query).then(data => {
-                this.jobs = data;
+                // data comes back as an object of objects instead of an array
+                // so convert it to an array
+                this.jobs = Object.values(data);
             }).catch(err => {
                 this.handleError(err, 'Job Search Failed');
             });
