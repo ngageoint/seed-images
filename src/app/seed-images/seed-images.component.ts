@@ -245,7 +245,7 @@ export class SeedImagesComponent implements OnInit {
         return this.intToHSL(this.getHashCode(value));
     }
 
-    getHeaderStyle(value) {
+    getHeaderStyle(value): any {
         return this.domSanitizer.bypassSecurityTrustStyle(`background-color: ${value}`);
     }
 

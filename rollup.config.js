@@ -5,7 +5,17 @@ export default {
         format: 'umd'
     },
 	sourceMap: false,
-    external: ['@angular/core', '@angular/common', '@angular/forms', '@angular/common/http', 'js-beautify', 'clipboard', 'rxjs/add/operator/toPromise', 'primeng/primeng'],
+    external: [
+        '@angular/core',
+        '@angular/common',
+        '@angular/forms',
+        '@angular/common/http',
+        '@angular/platform-browser',
+        'js-beautify',
+        'clipboard',
+        'rxjs/add/operator/toPromise',
+        'primeng/primeng'
+    ],
 	name: 'ng.seed-images',
     plugins: [
         {
