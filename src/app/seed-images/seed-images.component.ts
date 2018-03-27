@@ -239,7 +239,7 @@ export class SeedImagesComponent implements OnInit {
     private intToHSL(int) {
         const shortened = int % 360;
         return `hsl(${shortened}, 100%, 80%)`;
-    };
+    }
 
     private colorByHashCode(value) {
         return this.intToHSL(this.getHashCode(value));
