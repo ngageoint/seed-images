@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { Message } from 'primeng/components/common/api';
 import * as beautify from 'js-beautify';
@@ -37,12 +38,17 @@ import 'rxjs/add/operator/toPromise';
                     <ng-template let-job pTemplate="item">
                         <div class="ui-g-12 ui-md-4">
                             <a (click)="showJobDetails(job)">
-                                <p-panel [header]="job.Title">
-                                    {{ job.Description }}<br />
-                                    <strong>Maintainer:</strong> {{ job.Maintainer }}<br />
-                                    <span *ngIf="job.MaintOrg">
+                                <p-panel [showHeader]="false">
+                                    <div class="result-header" [style]="getHeaderStyle(job.hsl)">
+                                        <h3>{{ job.Title }}</h3>
+                                    </div>
+                                    <div class="result-content">
+                                        <div class="job-description">{{ job.Description }}</div>
+                                        <strong>Maintainer:</strong> {{ job.Maintainer }}<br />
+                                        <span *ngIf="job.MaintOrg">
                                         <strong>Organization:</strong> {{ job.MaintOrg }}
                                     </span>
+                                    </div>
                                 </p-panel>
                             </a>
                         </div>
@@ -112,9 +118,23 @@ import 'rxjs/add/operator/toPromise';
         ::ng-deep .seed-jobs .search .ui-autocomplete-loader {
             display: none;
         }
-        .seed-jobs .results h3 {
+        .seed-jobs .results .result-header {
+            border-radius: 3px 3px 0 0;
+        }
+        .seed-jobs .results .result-header h3 {
             text-align: center;
-            margin: 18px 0;
+            margin: 0;
+            padding: 7px 0;
+        }
+        .seed-jobs .results .result-content {
+            padding: 10px;
+            text-align: center;
+            min-height: 90px;
+        }
+        .seed-jobs .results .result-content .job-description {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
         .seed-jobs .job-details {
             width: 33%;
@@ -149,11 +169,7 @@ import 'rxjs/add/operator/toPromise';
             font-size: 0.9em;
         }
         ::ng-deep .seed-jobs .results .ui-panel .ui-panel-content {
-            text-align: center;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            min-height: 110px;
+            padding: 0;
         }
         ::ng-deep .seed-jobs .results .ui-panel:hover {
             background: #48ACFF;
@@ -191,7 +207,8 @@ export class SeedImagesComponent implements OnInit {
     showPackageDropdown = false;
 
     constructor(
-        private http: HttpClient
+        private http: HttpClient,
+        private domSanitizer: DomSanitizer
     ) {}
 
     private handleError(err: any, summary?: string): void {
@@ -199,12 +216,37 @@ export class SeedImagesComponent implements OnInit {
         if (err.status === 0) {
             detail = 'CORS error: Unable to access server';
         } else {
-            detail = err.statusText.length > 0 ? err.statusText : 'Server error';
+            detail = err.statusText && err.statusText.length > 0 ? err.statusText : 'Server error';
         }
         this.msgs = [];
         this.msgs.push({severity: 'error', summary: summary || 'Error', detail: detail});
         this.importBtnIcon = 'fa-cloud-download';
         this.loading = false;
+    }
+
+    private getHashCode(str) {
+        let hash = 0;
+        if (str.length === 0) {
+            return hash;
+        }
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
+    private intToHSL(int) {
+        const shortened = int % 360;
+        return `hsl(${shortened}, 100%, 80%)`;
+    };
+
+    private colorByHashCode(value) {
+        return this.intToHSL(this.getHashCode(value));
+    }
+
+    getHeaderStyle(value) {
+        return this.domSanitizer.bypassSecurityTrustStyle(`background-color: ${value}`);
     }
 
     getJobs(): Promise<any> {
@@ -308,6 +350,9 @@ export class SeedImagesComponent implements OnInit {
 
     ngOnInit() {
         this.getJobs().then(data => {
+            data.forEach(d => {
+                d.hsl = this.colorByHashCode(d.Title);
+            });
             this.jobs = data;
         }).catch(err => {
             this.handleError(err, 'Job Retrieval Failed');
