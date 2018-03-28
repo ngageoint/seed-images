@@ -237,7 +237,8 @@ export class SeedImagesComponent implements OnInit {
     }
 
     private intToHSL(int) {
-        const shortened = int % 360;
+        let shortened = int % 360;
+        shortened = shortened < 0 ? shortened + 360 : shortened;
         return `hsl(${shortened}, 100%, 80%)`;
     }
 
