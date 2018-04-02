@@ -224,6 +224,13 @@ export class SeedImagesComponent implements OnInit {
         this.loading = false;
     }
 
+    private formatData(data) {
+        data.forEach(d => {
+            d.hsl = this.colorByHashCode(d.Title);
+        });
+        this.jobs = data;
+    }
+
     private getHashCode(str) {
         let hash = 0;
         if (str.length === 0) {
@@ -295,13 +302,13 @@ export class SeedImagesComponent implements OnInit {
             this.searchJobs(event.query).then(data => {
                 // data comes back as an object of objects instead of an array
                 // so convert it to an array
-                this.jobs = Object.values(data);
+                this.formatData(Object.values(data));
             }).catch(err => {
                 this.handleError(err, 'Job Search Failed');
             });
         } else {
             this.getJobs().then(data => {
-                this.jobs = data;
+                this.formatData(data);
             }).catch(err => {
                 this.handleError(err, 'Job Retrieval Failed');
             });
@@ -352,10 +359,7 @@ export class SeedImagesComponent implements OnInit {
 
     ngOnInit() {
         this.getJobs().then(data => {
-            data.forEach(d => {
-                d.hsl = this.colorByHashCode(d.Title);
-            });
-            this.jobs = data;
+            this.formatData(data);
         }).catch(err => {
             this.handleError(err, 'Job Retrieval Failed');
         });
