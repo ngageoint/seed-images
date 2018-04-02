@@ -319,7 +319,7 @@ export class SeedImagesComponent implements OnInit {
 
     updateImages(): void {
         this.images = this.selectedJobVersion.Images.sort((a, b) => {
-            return a.PackageVersion - b.PackageVersion;
+            return parseFloat(a.PackageVersion) - parseFloat(b.PackageVersion);
         }).reverse();
         this.selectedImage = this.images[0];
         this.updateImageManifest();
@@ -329,7 +329,7 @@ export class SeedImagesComponent implements OnInit {
         this.selectedJob = job;
         this.showDialog = true;
         this.jobVersions = job.JobVersions.sort((a, b) => {
-            return a.JobVersion - b.JobVersion;
+            return parseFloat(a.JobVersion) - parseFloat(b.JobVersion);
         }).reverse();
         this.selectedJobVersion = this.jobVersions[0];
         this.updateImages();
