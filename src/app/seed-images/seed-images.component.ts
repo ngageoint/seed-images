@@ -114,7 +114,7 @@ import 'rxjs/add/operator/toPromise';
             fill: #FF6700;
         }
         ::ng-deep .seed-jobs .search .ui-inputtext {
-            font-size: 1.5em !important;
+            font-size: 1.5em;
         }
         ::ng-deep .seed-jobs .search .ui-autocomplete-loader {
             display: none;
@@ -177,14 +177,14 @@ import 'rxjs/add/operator/toPromise';
             transition: background-color 0.5s;
         }
         ::ng-deep .seed-jobs .results .ui-dialog {
-            width: 50% !important;
+            width: 50%;
         }
         ::ng-deep .seed-jobs .results .ui-dropdown {
-            font-size: 0.7em !important;
+            font-size: 0.7em;
             width: 150px;
         }
         ::ng-deep .seed-jobs .results .ui-button {
-            font-size: 0.7em !important;
+            font-size: 0.7em;
         }
     `]
 })
