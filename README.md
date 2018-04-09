@@ -10,6 +10,7 @@ An Angular component for [Seed](https://ngageoint.github.io/seed/) image discove
 * [Font Awesome](http://fontawesome.io)
 * [ClipboardJS](https://clipboardjs.com/)
 * [JS-Beautify](https://github.com/beautify-web/js-beautify)
+* [Lodash](https://lodash.com)
 
 ## Environment
 The seed-images component expects two environment properties to be set:
