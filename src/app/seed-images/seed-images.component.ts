@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Message } from 'primeng/components/common/api';
 import * as beautify from 'js-beautify';
 import * as Clipboard from 'clipboard';
+import * as _ from 'lodash';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -325,9 +326,7 @@ export class SeedImagesComponent implements OnInit {
     }
 
     updateImages(): void {
-        this.images = this.selectedJobVersion.Images.sort((a, b) => {
-            return parseFloat(a.PackageVersion) - parseFloat(b.PackageVersion);
-        }).reverse();
+        this.images = _.orderBy(this.selectedJobVersion.Images, ['PackageVersion'], ['desc']);
         this.selectedImage = this.images[0];
         this.updateImageManifest();
     }
@@ -335,9 +334,7 @@ export class SeedImagesComponent implements OnInit {
     showJobDetails(job): void {
         this.selectedJob = job;
         this.showDialog = true;
-        this.jobVersions = job.JobVersions.sort((a, b) => {
-            return parseFloat(a.JobVersion) - parseFloat(b.JobVersion);
-        }).reverse();
+        this.jobVersions = _.orderBy(job.JobVersions, ['JobVersion'], ['desc']);
         this.selectedJobVersion = this.jobVersions[0];
         this.updateImages();
     }

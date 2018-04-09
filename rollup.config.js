@@ -13,6 +13,7 @@ export default {
         '@angular/platform-browser',
         'js-beautify',
         'clipboard',
+		'lodash',
         'rxjs/add/operator/toPromise',
         'primeng/primeng'
     ],
@@ -33,6 +34,14 @@ export default {
                     code: code.replace(/import\s*\*\s*as\s*beautify/g, 'import beautify'),
                     map: { mappings: '' }
                 })
+        },
+		{
+            name: 'replace lodash imports',
+            transform: code =>
+                ({
+                    code: code.replace(/import\s*\*\s*as\s*_/g, 'import lodash'),
+                    map: { mappings: '' }
+                })
         }
     ],
 	globals: {
@@ -48,6 +57,7 @@ export default {
 		'rxjs/add/observable/fromEvent': 'Rx.Observable',
 		'rxjs/add/observable/of': 'Rx.Observable',
         'clipboard': 'clipboard',
+		'lodash': 'lodash',
         'js-beautify': 'js-beautify',
 		'primeng/primeng': 'primeng',
         'primeng': 'primeng'
