@@ -49,10 +49,10 @@ import { environment } from '../environments/environment';
 export class AppComponent {
   env = environment;
   constructor() {}
-  
+
   // method to handle image import if scale environment var is true
   onImageImport(image) {
-    console.log(image);
+    console.log(image.job, image.manifest);
   }
   ...
 }

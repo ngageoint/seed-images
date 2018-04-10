@@ -345,8 +345,8 @@ export class SeedImagesComponent implements OnInit {
     }
 
     onImportClick(): void {
-        // emit with manifest json
-        this.imageImport.emit(this.imageManifest);
+        // emit with selected job and manifest json
+        this.imageImport.emit({ job: this.selectedJob, manifest: this.imageManifest });
         this.hideJobDetails();
     }
 
