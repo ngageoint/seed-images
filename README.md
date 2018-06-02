@@ -5,7 +5,7 @@ An Angular component for [Seed](https://ngageoint.github.io/seed/) image discove
 `npm install --save seed-images`
 
 ## Dependencies
-* Angular 5
+* Angular
 * [PrimeNG](https://www.primefaces.org/primeng/)
 * [Font Awesome](http://fontawesome.io)
 * [ClipboardJS](https://clipboardjs.com/)
