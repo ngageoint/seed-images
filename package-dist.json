@@ -1,6 +1,6 @@
 {
     "name": "seed-images",
-    "version": "4.2.0",
+    "version": "4.3.0",
     "description": "Angular component for Seed image discovery",
     "main": "bundles/seed-images.umd.js",
     "module": "index.js",
@@ -20,19 +20,19 @@
         "url": "https://github.com/appliedis/seed-images/issues"
     },
     "peerDependencies": {
-        "@angular/animations": "^5.2.8",
-        "@angular/common": "^5.2.8",
-        "@angular/core": "^5.2.8",
-        "@angular/forms": "^5.2.8",
-        "@angular/http": "^5.2.8",
-        "@angular/platform-browser": "^5.2.8",
-        "@angular/router": "^5.2.8",
+        "@angular/animations": "^6.0.3",
+        "@angular/common": "^6.0.3",
+        "@angular/core": "^6.0.3",
+        "@angular/forms": "^6.0.3",
+        "@angular/http": "^6.0.3",
+        "@angular/platform-browser": "^6.0.3",
+        "@angular/router": "^6.0.3",
         "clipboard": "^2.0.0",
         "font-awesome": "^4.7.0",
         "js-beautify": "^1.7.5",
         "lodash": "^4.17.5",
-        "primeng": "^5.2.3",
-        "rxjs": "^5.5.6",
-        "zone.js": "^0.8.20"
+        "primeng": "^5.2.7",
+        "rxjs": "^6.2.0",
+        "zone.js": "^0.8.26"
     }
 }
