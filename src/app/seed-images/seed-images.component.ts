@@ -266,8 +266,19 @@ export class SeedImagesComponent implements OnInit {
             .then(response => {
                 this.loading = false;
                 return Promise.resolve(response);
-            })
-            .catch(err => {
+            }, err => {
+                return Promise.reject(err);
+            });
+    }
+
+    getJob(id: number): Promise<any> {
+        this.loading = true;
+        return this.http.get(`${this.environment.siloUrl}/jobs/${id}`)
+            .toPromise()
+            .then(response => {
+                this.loading = false;
+                return Promise.resolve(response);
+            }, err => {
                 return Promise.reject(err);
             });
     }
@@ -279,8 +290,7 @@ export class SeedImagesComponent implements OnInit {
             .then(response => {
                 this.loading = false;
                 return Promise.resolve(response);
-            })
-            .catch(err => {
+            }, err => {
                 return Promise.reject(err);
             });
     }
@@ -292,8 +302,7 @@ export class SeedImagesComponent implements OnInit {
             .then(response => {
                 this.importBtnIcon = 'fa-cloud-download';
                 return Promise.resolve(response);
-            })
-            .catch(err => {
+            }, err => {
                 return Promise.reject(err);
             });
     }
@@ -304,13 +313,13 @@ export class SeedImagesComponent implements OnInit {
                 // data comes back as an object of objects instead of an array
                 // so convert it to an array
                 this.formatData(Object.values(data));
-            }).catch(err => {
+            }, err => {
                 this.handleError(err, 'Job Search Failed');
             });
         } else {
             this.getJobs().then(data => {
                 this.formatData(data);
-            }).catch(err => {
+            }, err => {
                 this.handleError(err, 'Job Retrieval Failed');
             });
         }
@@ -320,7 +329,7 @@ export class SeedImagesComponent implements OnInit {
         this.getImageManifest(this.selectedImage.ID).then(data => {
             this.imageManifest = data;
             this.imageManifestDisplay = beautify(JSON.stringify(data));
-        }).catch(err => {
+        }, err => {
             this.handleError(err, 'Manifest Retrieval Failed');
         });
     }
@@ -332,11 +341,15 @@ export class SeedImagesComponent implements OnInit {
     }
 
     showJobDetails(job): void {
-        this.selectedJob = job;
-        this.showDialog = true;
-        this.jobVersions = _.orderBy(job.JobVersions, ['JobVersion'], ['desc']);
-        this.selectedJobVersion = this.jobVersions[0];
-        this.updateImages();
+        this.getJob(job.ID).then(data => {
+            this.selectedJob = data;
+            this.showDialog = true;
+            this.jobVersions = _.orderBy(data.JobVersions, ['JobVersion'], ['desc']);
+            this.selectedJobVersion = this.jobVersions[0];
+            this.updateImages();
+        }, err => {
+            this.handleError(err, 'Job Retrieval Failed');
+        });
     }
 
     hideJobDetails(): void {
@@ -357,7 +370,7 @@ export class SeedImagesComponent implements OnInit {
     ngOnInit() {
         this.getJobs().then(data => {
             this.formatData(data);
-        }).catch(err => {
+        }, err => {
             this.handleError(err, 'Job Retrieval Failed');
         });
         this.clipboard.on('success', () => {
