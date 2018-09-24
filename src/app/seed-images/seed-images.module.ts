@@ -4,14 +4,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeedImagesComponent } from './seed-images.component';
 
+import { ButtonModule } from 'primeng/button';
+import { DataViewModule } from 'primeng/dataview';
+import { DialogModule } from 'primeng/dialog';
+import { GrowlModule } from 'primeng/growl';
+import { PanelModule } from 'primeng/panel';
 import {
     AutoCompleteModule,
-    ButtonModule,
-    DataGridModule,
-    DialogModule,
     DropdownModule,
-    GrowlModule,
-    PanelModule,
     TooltipModule
 } from 'primeng/primeng';
 
@@ -23,7 +23,7 @@ import {
         // prime-ng
         AutoCompleteModule,
         ButtonModule,
-        DataGridModule,
+        DataViewModule,
         DialogModule,
         DropdownModule,
         GrowlModule,

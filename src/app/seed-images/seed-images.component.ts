@@ -34,44 +34,54 @@ import 'rxjs/add/operator/toPromise';
                 </div>
             </div>
             <div class="results">
-                <h3>{{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found</h3>
-                <p-dataGrid [value]="jobs">
-                    <ng-template let-job pTemplate="item">
+                <p-dataView [value]="jobs" layout="grid">
+                    <p-header>
+                        {{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found
+                    </p-header>
+                    <ng-template let-job pTemplate="gridItem">
                         <div class="ui-g-12 ui-md-4">
                             <a (click)="showJobDetails(job)">
-                                <p-panel [showHeader]="false">
-                                    <div class="result-header" [style]="getHeaderStyle(job.hsl)">
-                                        <h3>{{ job.Title }}</h3>
-                                    </div>
+                                <p-panel>
+                                    <p-header>
+                                        <div class="result-header" [style]="getHeaderStyle(job.hsl)">
+                                            <h3>{{ job.Title }}</h3>
+                                        </div>
+                                    </p-header>
                                     <div class="result-content">
                                         <div class="job-description">{{ job.Description }}</div>
                                         <strong>Maintainer:</strong> {{ job.Maintainer }}<br />
                                         <span *ngIf="job.MaintOrg">
-                                        <strong>Organization:</strong> {{ job.MaintOrg }}
-                                    </span>
+                                            <strong>Organization:</strong> {{ job.MaintOrg }}
+                                        </span>
                                     </div>
                                 </p-panel>
                             </a>
                         </div>
                     </ng-template>
-                </p-dataGrid>
+                </p-dataView>
                 <p-dialog *ngIf="selectedJob" [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
                           [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
-                    <p-header>
-                        {{ selectedJob.Title }}
-                        <p-dropdown [options]="jobVersions" optionLabel="JobVersion" [(ngModel)]="selectedJobVersion"
-                                    (onChange)="updateImages()" [showClear]="false" [filter]="true" [autoWidth]="false">
-                        </p-dropdown>
-                        <button pButton class="ui-button-secondary" icon="fa-cube" pTooltip="Package version..."
-                                (click)="choosePackage()" *ngIf="!showPackageDropdown"></button>
-                        <p-dropdown [options]="images" optionLabel="PackageVersion" [(ngModel)]="selectedImage"
-                                    (onChange)="updateImageManifest()" [showClear]="false" *ngIf="showPackageDropdown">
-                        </p-dropdown>
+                    <p-header class="dialog-header">
+                        <span>{{ selectedJob.Title }}</span>
+                        <span>
+                            <p-dropdown [options]="jobVersions" optionLabel="JobVersion" [(ngModel)]="selectedJobVersion"
+                                        (onChange)="updateImages()" [showClear]="false" [filter]="true" [autoWidth]="false">
+                            </p-dropdown>
+                        </span>
+                        <span>
+                            <button pButton class="ui-button-secondary" icon="fa fa-cube" pTooltip="Package version..."
+                                    (click)="choosePackage()" *ngIf="!showPackageDropdown"></button>
+                        </span>
+                        <span>
+                            <p-dropdown [options]="images" optionLabel="PackageVersion" [(ngModel)]="selectedImage"
+                                        (onChange)="updateImageManifest()" [showClear]="false" *ngIf="showPackageDropdown">
+                            </p-dropdown>
+                        </span>
                     </p-header>
                     {{ selectedJob.Description }}
                     <div class="header">
-                        Manifest
-                        <button class="copy-btn ui-button-secondary" pButton type="button" icon="fa-copy"
+                        <div>Manifest</div>
+                        <button class="copy-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
                                 pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
                         </button>
                     </div>
@@ -119,13 +129,23 @@ import 'rxjs/add/operator/toPromise';
         ::ng-deep .seed-jobs .search .ui-autocomplete-loader {
             display: none;
         }
+        .seed-jobs .results .dialog-header {
+            display: inline-flex;
+            align-items: center;
+        }
+        .seed-jobs .results .dialog-header span {
+            display: inline-block;
+            margin-right: 7px;
+        }
         .seed-jobs .results .result-header {
             border-radius: 3px 3px 0 0;
+            padding: 0.571em 1em;
+            border: 1px solid #c8c8c8;
         }
         .seed-jobs .results .result-header h3 {
             text-align: center;
             margin: 0;
-            padding: 7px 0;
+            padding: 0;
         }
         .seed-jobs .results .result-content {
             padding: 10px;
@@ -144,16 +164,15 @@ import 'rxjs/add/operator/toPromise';
             font-size: 1.2em;
         }
         .seed-jobs .job-details .header {
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin: 12px 0 0 0;
             padding: 6px;
             background: #777;
             color: #fff;
         }
         .seed-jobs .job-details .header button {
-            position: absolute;
-            top: 5px;
-            right: 4px;
             padding: 0;
             font-size: 0.8em;
         }
@@ -183,9 +202,6 @@ import 'rxjs/add/operator/toPromise';
             font-size: 0.7em;
             width: 150px;
         }
-        ::ng-deep .seed-jobs .results .ui-button {
-            font-size: 0.7em;
-        }
     `]
 })
 export class SeedImagesComponent implements OnInit {
@@ -202,7 +218,7 @@ export class SeedImagesComponent implements OnInit {
     imageManifestDisplay: any;
     loading: boolean;
     showDialog = false;
-    importBtnIcon = 'fa-cloud-download';
+    importBtnIcon = 'fa fa-cloud-download';
     clipboard = new Clipboard('.copy-btn');
     msgs: Message[] = [];
     showPackageDropdown = false;
@@ -221,7 +237,7 @@ export class SeedImagesComponent implements OnInit {
         }
         this.msgs = [];
         this.msgs.push({severity: 'error', summary: summary || 'Error', detail: detail});
-        this.importBtnIcon = 'fa-cloud-download';
+        this.importBtnIcon = 'fa fa-cloud-download';
         this.loading = false;
     }
 
@@ -296,11 +312,11 @@ export class SeedImagesComponent implements OnInit {
     }
 
     getImageManifest(id): Promise<any> {
-        this.importBtnIcon = 'fa-spinner fa-spin';
+        this.importBtnIcon = 'fa fa-spinner fa-spin';
         return this.http.get(`${this.environment.siloUrl}/images/${id}/manifest`)
             .toPromise()
             .then(response => {
-                this.importBtnIcon = 'fa-cloud-download';
+                this.importBtnIcon = 'fa fa-cloud-download';
                 return Promise.resolve(response);
             }, err => {
                 return Promise.reject(err);
