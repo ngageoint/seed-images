@@ -78,10 +78,24 @@ import 'rxjs/add/operator/toPromise';
                             </p-dropdown>
                         </span>
                     </p-header>
-                    {{ selectedJob.Description }}
+                    <div class="description-header">
+                        <h3>Description</h3>
+                    </div>
+                    <div class="description">
+                        {{ selectedJob.Description }}
+                    </div>
+                    <div class="docker-command-header">
+                        <h3>Docker Command</h3>
+                        <button class="copy-docker-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
+                                pTooltip="Copy to clipboard" data-clipboard-target="#docker">
+                        </button>
+                    </div>
+                    <div class="docker-command">
+                        <pre id="docker"><code>docker pull {{ fullImageName }}</code></pre>
+                    </div>
                     <div class="header">
                         <div>Manifest</div>
-                        <button class="copy-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
+                        <button class="copy-manifest-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
                                 pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
                         </button>
                     </div>
@@ -163,6 +177,28 @@ import 'rxjs/add/operator/toPromise';
         .seed-jobs .job-details h2 {
             font-size: 1.2em;
         }
+        .seed-jobs .job-details h3 {
+            margin: 0;
+            padding: 0;
+        }
+        .seed-jobs .job-details .description {
+            margin-bottom: 15px;
+        }
+        .seed-jobs .job-details .docker-command-header {
+            display: flex;
+            align-items: center;
+        }
+        .seed-jobs .job-details .docker-command-header h3 {
+            margin-right: 7px;
+        }
+        .seed-jobs .job-details .docker-command-header button {
+            padding: 0;
+            font-size: 0.8em;
+        }
+        .seed-jobs .job-details .docker-command pre {
+            margin: 0;
+            padding: 0;
+        }
         .seed-jobs .job-details .header {
             display: flex;
             align-items: center;
@@ -202,6 +238,25 @@ import 'rxjs/add/operator/toPromise';
             font-size: 0.7em;
             width: 150px;
         }
+        ::ng-deep .seed-jobs .results .ui-button-secondary:focus {
+            background: #f4f4f4 !important;
+        }
+        ::ng-deep .seed-jobs .results .ui-dataview-header {
+            border: none !important;
+            background: none !important;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        ::ng-deep .seed-jobs .results .ui-dataview-content {
+            border: none !important;
+            background: none !important;
+        }
+
+        ::ng-deep .seed-jobs .results .ui-panel-titlebar {
+            border: none !important;
+            background: none !important;
+            padding: 0 !important;
+        }
     `]
 })
 export class SeedImagesComponent implements OnInit {
@@ -214,12 +269,14 @@ export class SeedImagesComponent implements OnInit {
     selectedJobVersion: any;
     images: any[] = [];
     selectedImage: any;
+    fullImageName: any;
     imageManifest: any;
     imageManifestDisplay: any;
     loading: boolean;
     showDialog = false;
     importBtnIcon = 'fa fa-cloud-download';
-    clipboard = new Clipboard('.copy-btn');
+    clipboardManifest = new Clipboard('.copy-manifest-btn');
+    clipboardDocker = new Clipboard('.copy-docker-btn');
     msgs: Message[] = [];
     showPackageDropdown = false;
 
@@ -311,6 +368,18 @@ export class SeedImagesComponent implements OnInit {
             });
     }
 
+    getFullImageName(id): Promise<any> {
+        this.importBtnIcon = 'fa fa-spinner fa-spin';
+        return this.http.get(`${this.environment.siloUrl}/images/${id}`)
+            .toPromise()
+            .then(response => {
+                this.importBtnIcon = 'fa fa-cloud-download';
+                return Promise.resolve(response);
+            }, err => {
+                return Promise.reject(err);
+            });
+    }
+
     getImageManifest(id): Promise<any> {
         this.importBtnIcon = 'fa fa-spinner fa-spin';
         return this.http.get(`${this.environment.siloUrl}/images/${id}/manifest`)
@@ -341,6 +410,14 @@ export class SeedImagesComponent implements OnInit {
         }
     }
 
+    updateFullImageName(): void {
+        this.getFullImageName(this.selectedImage.ID).then(data => {
+            this.fullImageName = data.Org ? `${data.Registry}/${data.Org}/${data.FullName}` : `${data.Registry}/${data.FullName}`;
+        }, err => {
+            this.handleError(err, 'Full Name Retrieval Failed');
+        });
+    }
+
     updateImageManifest(): void {
         this.getImageManifest(this.selectedImage.ID).then(data => {
             this.imageManifest = data;
@@ -354,6 +431,7 @@ export class SeedImagesComponent implements OnInit {
         this.images = _.orderBy(this.selectedJobVersion.Images, ['PackageVersion'], ['desc']);
         this.selectedImage = this.images[0];
         this.updateImageManifest();
+        this.updateFullImageName();
     }
 
     showJobDetails(job): void {
@@ -389,8 +467,11 @@ export class SeedImagesComponent implements OnInit {
         }, err => {
             this.handleError(err, 'Job Retrieval Failed');
         });
-        this.clipboard.on('success', () => {
+        this.clipboardManifest.on('success', () => {
             this.msgs = [{severity: 'success', summary: 'Success!', detail: 'Manifest JSON copied to clipboard.'}];
+        });
+        this.clipboardDocker.on('success', () => {
+            this.msgs = [{severity: 'success', summary: 'Success!', detail: 'Docker pull command copied to clipboard.'}];
         });
     }
 }
