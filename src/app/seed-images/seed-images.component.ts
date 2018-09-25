@@ -191,7 +191,7 @@ import 'rxjs/add/operator/toPromise';
         ::ng-deep .seed-jobs .results .ui-panel .ui-panel-content {
             padding: 0;
         }
-        ::ng-deep .seed-jobs .results .ui-panel:hover {
+        ::ng-deep .seed-jobs .results .ui-panel-content:hover {
             background: #48ACFF;
             transition: background-color 0.5s;
         }
