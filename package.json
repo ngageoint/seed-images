@@ -67,7 +67,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "npm-run-all": "^4.1.2",
     "protractor": "^5.2.1",
-    "renamer": "^0.6.1",
+    "renamer": "^1.1.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.52.1",
     "ts-node": "^4.0.1",
