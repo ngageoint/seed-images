@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
-import { Message } from 'primeng/components/common/api';
+import { MessageService } from 'primeng/components/common/messageservice';
 import * as beautify from 'js-beautify';
 import * as Clipboard from 'clipboard';
 import * as _ from 'lodash';
@@ -65,7 +65,7 @@ import 'rxjs/add/operator/toPromise';
                         <span>{{ selectedJob.Title }}</span>
                         <span>
                             <p-dropdown [options]="jobVersions" optionLabel="JobVersion" [(ngModel)]="selectedJobVersion"
-                                        (onChange)="updateImages()" [showClear]="false" [filter]="true" [autoWidth]="false">
+                                        (onChange)="updateImages()" [showClear]="false" [filter]="true">
                             </p-dropdown>
                         </span>
                         <span>
@@ -109,7 +109,7 @@ import 'rxjs/add/operator/toPromise';
                 </p-dialog>
             </div>
         </div>
-        <p-growl [(value)]="msgs"></p-growl>
+        <p-toast></p-toast>
     `,
     styles: [`
         @keyframes spin {
@@ -277,12 +277,12 @@ export class SeedImagesComponent implements OnInit {
     importBtnIcon = 'fa fa-cloud-download';
     clipboardManifest = new Clipboard('.copy-manifest-btn');
     clipboardDocker = new Clipboard('.copy-docker-btn');
-    msgs: Message[] = [];
     showPackageDropdown = false;
 
     constructor(
         private http: HttpClient,
-        private domSanitizer: DomSanitizer
+        private domSanitizer: DomSanitizer,
+        private messageService: MessageService
     ) {}
 
     private handleError(err: any, summary?: string): void {
@@ -292,8 +292,7 @@ export class SeedImagesComponent implements OnInit {
         } else {
             detail = err.statusText && err.statusText.length > 0 ? err.statusText : 'Server error';
         }
-        this.msgs = [];
-        this.msgs.push({severity: 'error', summary: summary || 'Error', detail: detail});
+        this.messageService.add({severity: 'error', summary: summary || 'Error', detail: detail});
         this.importBtnIcon = 'fa fa-cloud-download';
         this.loading = false;
     }
@@ -468,10 +467,10 @@ export class SeedImagesComponent implements OnInit {
             this.handleError(err, 'Job Retrieval Failed');
         });
         this.clipboardManifest.on('success', () => {
-            this.msgs = [{severity: 'success', summary: 'Success!', detail: 'Manifest JSON copied to clipboard.'}];
+            this.messageService.add({severity: 'success', summary: 'Success', detail: 'Manifest JSON copied to clipboard.'});
         });
         this.clipboardDocker.on('success', () => {
-            this.msgs = [{severity: 'success', summary: 'Success!', detail: 'Docker pull command copied to clipboard.'}];
+            this.messageService.add({severity: 'success', summary: 'Success', detail: 'Docker pull command copied to clipboard.'});
         });
     }
 }

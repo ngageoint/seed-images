@@ -7,8 +7,9 @@ import { SeedImagesComponent } from './seed-images.component';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
-import { GrowlModule } from 'primeng/growl';
 import { PanelModule } from 'primeng/panel';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/components/common/messageservice';
 import {
     AutoCompleteModule,
     DropdownModule,
@@ -26,12 +27,13 @@ import {
         DataViewModule,
         DialogModule,
         DropdownModule,
-        GrowlModule,
+        ToastModule,
         PanelModule,
         TooltipModule
     ],
     declarations: [SeedImagesComponent],
-    exports: [SeedImagesComponent]
+    exports: [SeedImagesComponent],
+    providers: [MessageService]
 })
 export class SeedImagesModule {
 }
