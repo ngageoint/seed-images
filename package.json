@@ -14,7 +14,8 @@
         "package": "rollup -c",
         "minify": "uglifyjs dist/bundles/seed-images.umd.js --screw-ie8 --compress --mangle--comments--output dist/bundles/seed-images.umd.min.js",
         "copy": "cp './package-dist.json' dist && renamer --find 'package-dist.json' --replace 'package.json' ./dist/* && cp './readme.md' dist",
-        "build": "npm run clean && npm run transpile && npm run package && npm run minify && npm run copy"
+        "build": "npm run clean && npm run transpile && npm run package && npm run minify && npm run copy",
+        "release": "standard-version"
     },
     "repository": {
         "type": "git",
