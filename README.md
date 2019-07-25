@@ -66,3 +66,12 @@ or, if `scale: true`
 ```
 <seed-images [environment]="env" (imageImport)="onImageImport($event)"></seed-images>
 ```
+
+## Release and Publish to NPM
+* Login to NPM with a [valid NPM account](https://docs.npmjs.com/creating-a-new-npm-user-account)
+* Commit any relevant changes
+* Execute `npm run release` to cut a new version
+* Update package-dist.json file with current version information
+* Execute `npm run build` to compile app
+* Inside the `dist` directory, execute `npm publish`
+* Execute `git push --follow-tags origin master`
