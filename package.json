@@ -1,5 +1,5 @@
 {
-    "name": "seed-images",
+    "name": "@ngageoint/seed-images",
     "version": "4.6.1",
     "description": "Angular component for Seed image discovery",
     "scripts": {
