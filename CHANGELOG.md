@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.6.2](https://github.com/ngageoint/seed-images/compare/v4.6.0...v4.6.1) (2019-08-12)
+
+### Updates
+
+* Moved npm package from seed-images (owned by Eric) to ngageoint/seed-images org.
+
 ### [4.6.1](https://github.com/ngageoint/seed-images/compare/v4.6.0...v4.6.1) (2019-06-12)
 
 
