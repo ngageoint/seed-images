@@ -32,6 +32,8 @@ export class SeedImagesComponent implements OnInit {
     clipboardManifest = new Clipboard('.copy-manifest-btn');
     clipboardDocker = new Clipboard('.copy-docker-btn');
     showPackageDropdown = false;
+    showDockerURL: boolean;
+    URL: any;
 
     constructor(
         private http: HttpClient,
@@ -111,7 +113,7 @@ export class SeedImagesComponent implements OnInit {
 
     searchJobs(query): Promise<any> {
         this.loading = true;
-        return this.http.get(`${this.environment.siloUrl}/jobs/search/${query}`)
+        return this.http.get(`${this.environment.siloUrl}/jobs/search/${this.URL}`)
             .toPromise()
             .then(response => {
                 this.loading = false;
@@ -163,6 +165,18 @@ export class SeedImagesComponent implements OnInit {
         }
     }
 
+    findDockerURL(url) {
+        return this.http.get(`${this.environment.siloUrl}/images/search/${url}`)
+            .toPromise()
+            .then(response => {
+                this.importBtnIcon = 'fa fa-cloud-download';
+                return Promise.resolve(response);
+            }, err => {
+                return Promise.reject(err);
+            });
+
+    }
+
     updateFullImageName(): void {
         this.getFullImageName(this.selectedImage.ID).then(data => {
             this.fullImageName = data.Org ? `${data.Registry}/${data.Org}/${data.FullName}` : `${data.Registry}/${data.FullName}`;
@@ -197,6 +211,15 @@ export class SeedImagesComponent implements OnInit {
         }, err => {
             this.handleError(err, 'Job Retrieval Failed');
         });
+    }
+
+    hideDockerDetails(): void {
+        this.selectedJob = null;
+        this.showPackageDropdown = false;
+    }
+
+    showDockerURLDetails(): void {
+        this.showDockerURL = true;
     }
 
     hideJobDetails(): void {
