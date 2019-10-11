@@ -2,6 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/components/common/messageservice';
+import template from './seed-images.component-html';
+import style from './seed-images.component-css';
+
 import * as beautify from 'js-beautify';
 import * as Clipboard from 'clipboard';
 import * as _ from 'lodash';
@@ -10,8 +13,8 @@ import 'rxjs/add/operator/toPromise';
 
 @Component({
     selector: 'seed-images',
-    templateUrl: './seed-images.component.html',
-    styleUrls: ['./seed-images.component.css']
+    template: template + '',
+    styles: [style + '']
 })
 export class SeedImagesComponent implements OnInit {
     @Input() environment: any;

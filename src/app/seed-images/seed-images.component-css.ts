@@ -1,3 +1,4 @@
+export default `
 @keyframes spin {
     to {
         transform: rotate(1440deg);
@@ -154,3 +155,4 @@
     background: none !important;
     padding: 0 !important;
 }
+`;

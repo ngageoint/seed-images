@@ -1,3 +1,4 @@
+export default `
 <div class="seed-jobs">
     <div class="search">
         <p-autoComplete [(ngModel)]="jobQueryResult" (completeMethod)="filterJobs($event)" field="Name"
@@ -24,7 +25,8 @@
         <p-dataView [value]="jobs" layout="grid">
             <p-header>
                 {{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found
-                <button pButton class="import-url" type="button" (click)="showDockerURLDetails()" label="Add Image from URL" [icon]="importBtnIcon"
+                <button pButton class="import-url" type="button" (click)="showDockerURLDetails()"
+                    label="Add Image from URL" [icon]="importBtnIcon"
                 iconPos="right"></button>
             </p-header>
             <ng-template let-job pTemplate="gridItem">
@@ -149,3 +151,4 @@
     </div>
 </div>
 <p-toast></p-toast>
+`;
