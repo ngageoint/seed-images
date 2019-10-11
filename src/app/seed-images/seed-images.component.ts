@@ -34,6 +34,7 @@ export class SeedImagesComponent implements OnInit {
     showPackageDropdown = false;
     showDockerURL: boolean;
     URL: any;
+    showDialogForURL: boolean;
 
     constructor(
         private http: HttpClient,
@@ -165,15 +166,36 @@ export class SeedImagesComponent implements OnInit {
         }
     }
 
-    findDockerURL(url) {
-        return this.http.get(`${this.environment.siloUrl}/images/search/${url}`)
+    findDockerURL(url): Promise<any>  {
+        return this.http.get(`${this.environment.siloUrl}/images/manifest/${url}`)
             .toPromise()
             .then(response => {
                 this.importBtnIcon = 'fa fa-cloud-download';
+                this.showJobDetails(response);
                 return Promise.resolve(response);
             }, err => {
                 return Promise.reject(err);
             });
+
+    }
+
+    showFoundJob(url) {
+        this.findDockerURL(url).then(manifest => {
+            this.selectedJob = {
+                Description: manifest.job.description,
+                Email: manifest.job.maintainer.email,
+                Maintainer: manifest.job.maintainer.name,
+                MaintOrg: manifest.job.maintainer.organization,
+                LatestJobVersion: manifest.job.jobVersion,
+                LatestPackageVersion: manifest.job.packageVersion,
+                Name: manifest.job.name,
+                Title: manifest.job.title,
+            };
+            this.imageManifest = manifest;
+            this.showDialogForURL = true;
+        }, err => {
+            this.handleError(err, 'Job Retrieval Failed');
+        });
 
     }
 
@@ -202,6 +224,7 @@ export class SeedImagesComponent implements OnInit {
     }
 
     showJobDetails(job): void {
+        console.log(job);
         this.getJob(job.ID).then(data => {
             this.selectedJob = data;
             this.showDialog = true;
@@ -213,6 +236,11 @@ export class SeedImagesComponent implements OnInit {
         });
     }
 
+    hideJobDetails(): void {
+        this.selectedJob = null;
+        this.showPackageDropdown = false;
+    }
+
     hideDockerDetails(): void {
         this.selectedJob = null;
         this.showPackageDropdown = false;
@@ -222,9 +250,11 @@ export class SeedImagesComponent implements OnInit {
         this.showDockerURL = true;
     }
 
-    hideJobDetails(): void {
-        this.selectedJob = null;
-        this.showPackageDropdown = false;
+    showURLDetails(mainfest): void {
+        this.showDialogForURL = true;
+
+        this.selectedJobVersion = this.jobVersions[0];
+        this.updateImages();
     }
 
     onImportClick(): void {
