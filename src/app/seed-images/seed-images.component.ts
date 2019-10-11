@@ -29,6 +29,7 @@ export class SeedImagesComponent implements OnInit {
     loading: boolean;
     showDialog = false;
     importBtnIcon = 'fa fa-cloud-download';
+    searchBtnIcon = 'fa fa-search';
     clipboardManifest = new Clipboard('.copy-manifest-btn');
     clipboardDocker = new Clipboard('.copy-docker-btn');
     showPackageDropdown = false;
@@ -170,8 +171,6 @@ export class SeedImagesComponent implements OnInit {
         return this.http.get(`${this.environment.siloUrl}/images/manifest/${url}`)
             .toPromise()
             .then(response => {
-                this.importBtnIcon = 'fa fa-cloud-download';
-                this.showJobDetails(response);
                 return Promise.resolve(response);
             }, err => {
                 return Promise.reject(err);
@@ -180,6 +179,7 @@ export class SeedImagesComponent implements OnInit {
     }
 
     showFoundJob(url) {
+        this.searchBtnIcon = 'fa fa-spinner fa-spin';
         this.findDockerURL(url).then(manifest => {
             this.selectedJob = {
                 Description: manifest.job.description,
@@ -188,14 +188,23 @@ export class SeedImagesComponent implements OnInit {
                 MaintOrg: manifest.job.maintainer.organization,
                 LatestJobVersion: manifest.job.jobVersion,
                 LatestPackageVersion: manifest.job.packageVersion,
+                selectedPackageVersion: manifest.job.packageVersion,
                 Name: manifest.job.name,
                 Title: manifest.job.title,
             };
+            this.jobVersions = this.selectedJob.LatestJobVersion;
+            this.selectedJobVersion = this.selectedJob.LatestJobVersion;
+            this.selectedImage = this.selectedJob.selectedPackageVersion;
             this.imageManifest = manifest;
+            this.imageManifestDisplay = beautify(JSON.stringify(manifest));
+            this.fullImageName = url;
             this.showDialogForURL = true;
+            this.searchBtnIcon = 'fa fa-search';
         }, err => {
             this.handleError(err, 'Job Retrieval Failed');
+            this.searchBtnIcon = 'fa fa-search';
         });
+
 
     }
 
@@ -242,11 +251,11 @@ export class SeedImagesComponent implements OnInit {
     }
 
     hideDockerDetails(): void {
-        this.selectedJob = null;
-        this.showPackageDropdown = false;
+        this.showDockerURL = false;
     }
 
     showDockerURLDetails(): void {
+        this.searchBtnIcon = 'fa fa-search';
         this.showDockerURL = true;
     }
 
