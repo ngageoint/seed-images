@@ -1,6 +1,6 @@
 {
     "name": "@ngageoint/seed-images",
-    "version": "4.6.6",
+    "version": "4.6.7",
     "description": "Angular component for Seed image discovery",
     "main": "bundles/seed-images.umd.js",
     "module": "index.js",
