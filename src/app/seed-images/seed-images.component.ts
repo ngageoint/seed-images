@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/components/common/messageservice';
+
 import * as beautify from 'js-beautify';
 import * as Clipboard from 'clipboard';
 import * as _ from 'lodash';
@@ -10,254 +11,314 @@ import 'rxjs/add/operator/toPromise';
 
 @Component({
     selector: 'seed-images',
-    template: `
-        <div class="seed-jobs">
-            <div class="search">
-                <p-autoComplete [(ngModel)]="jobQueryResult" (completeMethod)="filterJobs($event)" field="Name"
-                                styleClass="search-input" placeholder="Search Jobs" [minLength]="0"></p-autoComplete>
-                <div class="loader" *ngIf="loading">
-                    <svg version="1.1" id="loader" xmlns="http://www.w3.org/2000/svg"
-                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
-                         viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-                        <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,
-                                             8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,
-                                             14.615,6.543,14.615,14.615H43.935z">
-                            <animateTransform attributeType="xml"
-                                              attributeName="transform"
-                                              type="rotate"
-                                              from="0 25 25"
-                                              to="360 25 25"
-                                              dur="0.6s"
-                                              repeatCount="indefinite"/>
-                        </path>
-                    </svg>
-                </div>
-            </div>
-            <div class="results">
-                <p-dataView [value]="jobs" layout="grid">
-                    <p-header>
-                        {{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found
-                    </p-header>
-                    <ng-template let-job pTemplate="gridItem">
-                        <div class="ui-g-12 ui-md-4">
-                            <a (click)="showJobDetails(job)">
-                                <p-panel>
-                                    <p-header>
-                                        <div class="result-header" [style]="getHeaderStyle(job.hsl)">
-                                            <h3>{{ job.Title }}</h3>
-                                        </div>
-                                    </p-header>
-                                    <div class="result-content">
-                                        <div class="job-description">{{ job.Description }}</div>
-                                        <strong>Maintainer:</strong> {{ job.Maintainer }}<br />
-                                        <span *ngIf="job.MaintOrg">
-                                            <strong>Organization:</strong> {{ job.MaintOrg }}
-                                        </span>
-                                    </div>
-                                </p-panel>
-                            </a>
-                        </div>
-                    </ng-template>
-                </p-dataView>
-                <p-dialog *ngIf="selectedJob" [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
-                          [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
-                    <p-header class="dialog-header">
-                        <span>{{ selectedJob.Title }}</span>
-                        <span>
-                            <p-dropdown [options]="jobVersions" optionLabel="JobVersion" [(ngModel)]="selectedJobVersion"
-                                        (onChange)="updateImages()" [showClear]="false" [filter]="true">
-                            </p-dropdown>
-                        </span>
-                        <span>
-                            <button pButton class="ui-button-secondary" icon="fa fa-cube" pTooltip="Package version..."
-                                    (click)="choosePackage()" *ngIf="!showPackageDropdown"></button>
-                        </span>
-                        <span>
-                            <p-dropdown [options]="images" optionLabel="PackageVersion" [(ngModel)]="selectedImage"
-                                        (onChange)="updateImageManifest()" [showClear]="false" *ngIf="showPackageDropdown">
-                            </p-dropdown>
-                        </span>
-                    </p-header>
-                    <div class="description-header">
-                        <h3>Description</h3>
-                    </div>
-                    <div class="description">
-                        {{ selectedJob.Description }}
-                    </div>
-                    <div class="docker-command-header">
-                        <h3>Docker Command</h3>
-                        <button class="copy-docker-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
-                                pTooltip="Copy to clipboard" data-clipboard-target="#docker">
-                        </button>
-                    </div>
-                    <div class="docker-command">
-                        <pre id="docker"><code>docker pull {{ fullImageName }}</code></pre>
-                    </div>
-                    <div class="header">
-                        <div>Manifest</div>
-                        <button class="copy-manifest-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
-                                pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
-                        </button>
-                    </div>
-                    <div class="code">
-                        <pre id="manifest"><code>{{ imageManifestDisplay }}</code></pre>
-                    </div>
-                    <p-footer *ngIf="environment.scale && imageManifest">
-                        <button pButton type="button" (click)="onImportClick()" label="Import" [icon]="importBtnIcon"
-                                iconPos="right"></button>
-                    </p-footer>
-                </p-dialog>
-            </div>
+    template: `<div class="seed-jobs">
+    <div class="search">
+        <p-autoComplete [(ngModel)]="jobQueryResult" (completeMethod)="filterJobs($event)" field="Name"
+                        styleClass="search-input" placeholder="Search Jobs" [minLength]="0"></p-autoComplete>
+        <div class="loader" *ngIf="loading">
+            <svg version="1.1" id="loader" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
+                viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,
+                                    8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,
+                                    14.615,6.543,14.615,14.615H43.935z">
+                    <animateTransform attributeType="xml"
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="0 25 25"
+                                    to="360 25 25"
+                                    dur="0.6s"
+                                    repeatCount="indefinite"/>
+                </path>
+            </svg>
         </div>
-        <p-toast></p-toast>
-    `,
-    styles: [`
-        @keyframes spin {
-            to {
-                transform: rotate(1440deg);
-            }
+    </div>
+    <div class="results">
+        <p-dataView [value]="jobs" layout="grid">
+            <p-header>
+                {{ jobs.length }} job<span *ngIf="jobs.length !== 1">s</span> found
+                <button pButton class="import-url" type="button" (click)="showDockerURLDetails()"
+                    label="Add Image from URL" [icon]="importBtnIcon"
+                iconPos="right"></button>
+            </p-header>
+            <ng-template let-job pTemplate="gridItem">
+                <div class="ui-g-12 ui-md-4">
+                    <a (click)="showJobDetails(job)">
+                        <p-panel>
+                            <p-header>
+                                <div class="result-header" [style]="getHeaderStyle(job.hsl)">
+                                    <h3>{{ job.Title }}</h3>
+                                </div>
+                            </p-header>
+                            <div class="result-content">
+                                <div class="job-description">{{ job.Description }}</div>
+                                <strong>Maintainer:</strong> {{ job.Maintainer }}<br />
+                                <span *ngIf="job.MaintOrg">
+                                    <strong>Organization:</strong> {{ job.MaintOrg }}
+                                </span>
+                            </div>
+                        </p-panel>
+                    </a>
+                </div>
+            </ng-template>
+        </p-dataView>
+        <p-dialog *ngIf="selectedJob" [(visible)]="showDialog" (onHide)="hideJobDetails()" [responsive]="true"
+                  [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
+            <p-header class="dialog-header">
+                <span>{{ selectedJob.Title }}</span>
+                <span>
+                    <p-dropdown [options]="jobVersions" optionLabel="JobVersion" [(ngModel)]="selectedJobVersion"
+                                (onChange)="updateImages()" [showClear]="false" [filter]="true">
+                    </p-dropdown>
+                </span>
+                <span>
+                    <button pButton class="ui-button-secondary" icon="fa fa-cube" pTooltip="Package version..."
+                            (click)="choosePackage()" *ngIf="!showPackageDropdown"></button>
+                </span>
+                <span>
+                    <p-dropdown [options]="images" optionLabel="PackageVersion" [(ngModel)]="selectedImage"
+                                (onChange)="updateImageManifest()" [showClear]="false" *ngIf="showPackageDropdown">
+                    </p-dropdown>
+                </span>
+            </p-header>
+            <div class="description-header">
+                <h3>Description</h3>
+            </div>
+            <div class="description">
+                {{ selectedJob.Description }}
+            </div>
+            <div class="docker-command-header">
+                <h3>Docker Command</h3>
+                <button class="copy-docker-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
+                        pTooltip="Copy to clipboard" data-clipboard-target="#docker">
+                </button>
+            </div>
+            <div class="docker-command">
+                <pre id="docker"><code>docker pull {{ fullImageName }}</code></pre>
+            </div>
+            <div class="header">
+                <div>Manifest</div>
+                <button class="copy-manifest-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
+                        pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
+                </button>
+            </div>
+            <div class="code">
+                <pre id="manifest"><code>{{ imageManifestDisplay }}</code></pre>
+            </div>
+            <p-footer *ngIf="environment.scale && imageManifest">
+                <button pButton type="button" (click)="onImportClick()" label="Import" [icon]="importBtnIcon"
+                        iconPos="right"></button>
+            </p-footer>
+        </p-dialog>
+        <p-dialog [(visible)]="showDockerURL" (onHide)="hideDockerDetails()" [responsive]="true"
+                  [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
+            <p-header class="dialog-header">
+                <span>Import New Job Type from Docker URL</span>
+            </p-header>
+            <div class="description-header">
+                <h3>Insert Docker URL</h3>
+                <h4>Example: hub.docker.com/orgName/imageName-jobVerison:packageVersion</h4>
+            </div>
+            <div>
+                <input class="input-url" pInputText type="text" [(ngModel)]="URL">
+                <button class="copy-manifest-btn ui-button-secondary" pButton type="button" [icon]="searchBtnIcon"
+                        (click)='showFoundJob(URL)'>
+                </button>
+            </div>
+        </p-dialog>
+        <p-dialog *ngIf="selectedJob" [(visible)]="showDialogForURL" (onHide)="hideJobDetails()" [responsive]="true"
+        [dismissableMask]="true" [modal]="true" width="auto" positionTop="40" class="job-details">
+            <p-header class="dialog-header">
+                <span>{{ selectedJob.Title }} - {{ selectedJobVersion }}:{{ selectedImage }}</span>
+            </p-header>
+            <div class="description-header">
+                <h3>Description</h3>
+            </div>
+            <div class="description">
+                {{ selectedJob.Description }}
+            </div>
+            <div class="docker-command-header">
+                <h3>Docker Command</h3>
+                <button class="copy-docker-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
+                        pTooltip="Copy to clipboard" data-clipboard-target="#docker">
+                </button>
+            </div>
+            <div class="docker-command">
+                <pre id="docker"><code>docker pull {{ fullImageName }}</code></pre>
+            </div>
+            <div class="header">
+                <div>Manifest</div>
+                <button class="copy-manifest-btn ui-button-secondary" pButton type="button" icon="fa fa-copy"
+                        pTooltip="Copy to clipboard" tooltipPosition="left" data-clipboard-target="#manifest">
+                </button>
+            </div>
+            <div class="code">
+                <pre id="manifest"><code>{{ imageManifestDisplay }}</code></pre>
+            </div>
+            <p-footer *ngIf="environment.scale && imageManifest">
+                <button pButton type="button" (click)="onImportClick()" label="Import" [icon]="importBtnIcon"
+                        iconPos="right"></button>
+            </p-footer>
+        </p-dialog>
+    </div>
+</div>
+<p-toast></p-toast>`,
+    styles: [`@keyframes spin {
+        to {
+            transform: rotate(1440deg);
         }
-        .seed-jobs .search {
-            position: relative;
-            text-align: center;
-            width: 50%;
-            margin: 0 auto 15px auto;
-        }
-        ::ng-deep .seed-jobs .search-input {
-            width: 100%;
-        }
-        ::ng-deep .seed-jobs .ui-autocomplete-input {
-            width: 100%;
-        }
-        .seed-jobs .search .loader {
-            position: absolute;
-            top: 7px;
-            right: 20px;
-        }
-        .seed-jobs .search .loader svg path, .seed-jobs .search .loader svg rect {
-            fill: #FF6700;
-        }
-        ::ng-deep .seed-jobs .search .ui-inputtext {
-            font-size: 1.5em;
-        }
-        ::ng-deep .seed-jobs .search .ui-autocomplete-loader {
-            display: none;
-        }
-        .seed-jobs .results .dialog-header {
-            display: inline-flex;
-            align-items: center;
-        }
-        .seed-jobs .results .dialog-header span {
-            display: inline-block;
-            margin-right: 7px;
-        }
-        .seed-jobs .results .result-header {
-            border-radius: 3px 3px 0 0;
-            padding: 0.571em 1em;
-            border: 1px solid #c8c8c8;
-        }
-        .seed-jobs .results .result-header h3 {
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .seed-jobs .results .result-content {
-            padding: 10px;
-            text-align: center;
-            min-height: 90px;
-        }
-        .seed-jobs .results .result-content .job-description {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .seed-jobs .job-details {
-            width: 33%;
-        }
-        .seed-jobs .job-details h2 {
-            font-size: 1.2em;
-        }
-        .seed-jobs .job-details h3 {
-            margin: 0;
-            padding: 0;
-        }
-        .seed-jobs .job-details .description {
-            margin-bottom: 15px;
-        }
-        .seed-jobs .job-details .docker-command-header {
-            display: flex;
-            align-items: center;
-        }
-        .seed-jobs .job-details .docker-command-header h3 {
-            margin-right: 7px;
-        }
-        .seed-jobs .job-details .docker-command-header button {
-            padding: 0;
-            font-size: 0.8em;
-        }
-        .seed-jobs .job-details .docker-command pre {
-            margin: 0;
-            padding: 0;
-        }
-        .seed-jobs .job-details .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 12px 0 0 0;
-            padding: 6px;
-            background: #777;
-            color: #fff;
-        }
-        .seed-jobs .job-details .header button {
-            padding: 0;
-            font-size: 0.8em;
-        }
-        .seed-jobs .job-details .code {
-            position: relative;
-            margin-top: -14px;
-        }
-        .seed-jobs .job-details .code pre {
-            width: 100%;
-            max-height: 300px;
-            overflow-x: hidden;
-            background: #efefef;
-            border: 1px solid #bbb;
-            font-size: 0.9em;
-        }
-        ::ng-deep .seed-jobs .results .ui-panel .ui-panel-content {
-            padding: 0;
-        }
-        ::ng-deep .seed-jobs .results .ui-panel-content:hover {
-            background: #48ACFF;
-            transition: background-color 0.5s;
-        }
-        ::ng-deep .seed-jobs .results .ui-dialog {
-            width: 50%;
-        }
-        ::ng-deep .seed-jobs .results .ui-dropdown {
-            font-size: 0.7em;
-            width: 150px;
-        }
-        ::ng-deep .seed-jobs .results .ui-button-secondary:focus {
-            background: #f4f4f4 !important;
-        }
-        ::ng-deep .seed-jobs .results .ui-dataview-header {
-            border: none !important;
-            background: none !important;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-        ::ng-deep .seed-jobs .results .ui-dataview-content {
-            border: none !important;
-            background: none !important;
-        }
+    }
+    .seed-jobs .search {
+        position: relative;
+        text-align: center;
+        width: 50%;
+        margin: 0 auto 15px auto;
+    }
+    .seed-jobs .import-url {
+        position: relative;
+        text-align: right;
+        float: right;
+    }
+    .seed-jobs .input-url {
+        text-align: left;
+        width: 50%;
+        margin-right: 10px;
+        font-size: 1.5em;
+    }
+    ::ng-deep .seed-jobs .search-input {
+        width: 100%;
+    }
+    ::ng-deep .seed-jobs .ui-autocomplete-input {
+        width: 100%;
+    }
+    .seed-jobs .search .loader {
+        position: absolute;
+        top: 7px;
+        right: 20px;
+    }
+    .seed-jobs .search .loader svg path, .seed-jobs .search .loader svg rect {
+        fill: #FF6700;
+    }
+    ::ng-deep .seed-jobs .search .ui-inputtext {
+        font-size: 1.5em;
+    }
+    ::ng-deep .seed-jobs .search .ui-autocomplete-loader {
+        display: none;
+    }
+    .seed-jobs .results .dialog-header {
+        display: inline-flex;
+        align-items: center;
+    }
+    .seed-jobs .results .dialog-header span {
+        display: inline-block;
+        margin-right: 7px;
+    }
+    .seed-jobs .results .result-header {
+        border-radius: 3px 3px 0 0;
+        padding: 0.571em 1em;
+        border: 1px solid #c8c8c8;
+    }
+    .seed-jobs .results .result-header h3 {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    .seed-jobs .results .result-content {
+        padding: 10px;
+        text-align: center;
+        min-height: 90px;
+    }
+    .seed-jobs .results .result-content .job-description {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .seed-jobs .job-details {
+        width: 33%;
+    }
+    .seed-jobs .job-details h2 {
+        font-size: 1.2em;
+    }
+    .seed-jobs .job-details h3 {
+        margin: 0;
+        padding: 0;
+    }
+    .seed-jobs .job-details .description {
+        margin-bottom: 15px;
+    }
+    .seed-jobs .job-details .docker-command-header {
+        display: flex;
+        align-items: center;
+    }
+    .seed-jobs .job-details .docker-command-header h3 {
+        margin-right: 7px;
+    }
+    .seed-jobs .job-details .docker-command-header button {
+        padding: 0;
+        font-size: 0.8em;
+    }
+    .seed-jobs .job-details .docker-command pre {
+        margin: 0;
+        padding: 0;
+    }
+    .seed-jobs .job-details .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 12px 0 0 0;
+        padding: 6px;
+        background: #777;
+        color: #fff;
+    }
+    .seed-jobs .job-details .header button {
+        padding: 0;
+        font-size: 0.8em;
+    }
+    .seed-jobs .job-details .code {
+        position: relative;
+        margin-top: -14px;
+    }
+    .seed-jobs .job-details .code pre {
+        width: 100%;
+        max-height: 300px;
+        overflow-x: hidden;
+        background: #efefef;
+        border: 1px solid #bbb;
+        font-size: 0.9em;
+    }
+    ::ng-deep .seed-jobs .results .ui-panel .ui-panel-content {
+        padding: 0;
+    }
+    ::ng-deep .seed-jobs .results .ui-panel-content:hover {
+        background: #48ACFF;
+        transition: background-color 0.5s;
+    }
+    ::ng-deep .seed-jobs .results .ui-dialog {
+        width: 50%;
+    }
+    ::ng-deep .seed-jobs .results .ui-dropdown {
+        font-size: 0.7em;
+        width: 150px;
+    }
+    ::ng-deep .seed-jobs .results .ui-button-secondary:focus {
+        background: #f4f4f4 !important;
+    }
+    ::ng-deep .seed-jobs .results .ui-dataview-header {
+        border: none !important;
+        background: none !important;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+    ::ng-deep .seed-jobs .results .ui-dataview-content {
+        border: none !important;
+        background: none !important;
+    }
 
-        ::ng-deep .seed-jobs .results .ui-panel-titlebar {
-            border: none !important;
-            background: none !important;
-            padding: 0 !important;
-        }
-    `]
+    ::ng-deep .seed-jobs .results .ui-panel-titlebar {
+        border: none !important;
+        background: none !important;
+        padding: 0 !important;
+    }`]
 })
 export class SeedImagesComponent implements OnInit {
     @Input() environment: any;
@@ -275,9 +336,13 @@ export class SeedImagesComponent implements OnInit {
     loading: boolean;
     showDialog = false;
     importBtnIcon = 'fa fa-cloud-download';
+    searchBtnIcon = 'fa fa-search';
     clipboardManifest = new Clipboard('.copy-manifest-btn');
     clipboardDocker = new Clipboard('.copy-docker-btn');
     showPackageDropdown = false;
+    showDockerURL: boolean;
+    URL: any;
+    showDialogForURL: boolean;
 
     constructor(
         private http: HttpClient,
@@ -409,6 +474,48 @@ export class SeedImagesComponent implements OnInit {
         }
     }
 
+    findDockerURL(url): Promise<any>  {
+        return this.http.get(`${this.environment.siloUrl}/images/manifest/${url}`)
+            .toPromise()
+            .then(response => {
+                return Promise.resolve(response);
+            }, err => {
+                return Promise.reject(err);
+            });
+
+    }
+
+    showFoundJob(url) {
+        this.searchBtnIcon = 'fa fa-spinner fa-spin';
+        this.findDockerURL(url).then(manifest => {
+            this.selectedJob = {
+                Description: manifest.job.description,
+                Email: manifest.job.maintainer.email,
+                Maintainer: manifest.job.maintainer.name,
+                MaintOrg: manifest.job.maintainer.organization,
+                LatestJobVersion: manifest.job.jobVersion,
+                LatestPackageVersion: manifest.job.packageVersion,
+                selectedPackageVersion: manifest.job.packageVersion,
+                Name: manifest.job.name,
+                Title: manifest.job.title,
+                URL: url
+            };
+            this.jobVersions = this.selectedJob.LatestJobVersion;
+            this.selectedJobVersion = this.selectedJob.LatestJobVersion;
+            this.selectedImage = this.selectedJob.selectedPackageVersion;
+            this.imageManifest = manifest;
+            this.imageManifestDisplay = beautify(JSON.stringify(manifest));
+            this.fullImageName = url;
+            this.showDialogForURL = true;
+            this.searchBtnIcon = 'fa fa-search';
+        }, err => {
+            this.handleError(err, 'Job Retrieval Failed');
+            this.searchBtnIcon = 'fa fa-search';
+        });
+
+
+    }
+
     updateFullImageName(): void {
         this.getFullImageName(this.selectedImage.ID).then(data => {
             this.fullImageName = data.Org ? `${data.Registry}/${data.Org}/${data.FullName}` : `${data.Registry}/${data.FullName}`;
@@ -448,6 +555,22 @@ export class SeedImagesComponent implements OnInit {
     hideJobDetails(): void {
         this.selectedJob = null;
         this.showPackageDropdown = false;
+    }
+
+    hideDockerDetails(): void {
+        this.showDockerURL = false;
+    }
+
+    showDockerURLDetails(): void {
+        this.searchBtnIcon = 'fa fa-search';
+        this.showDockerURL = true;
+    }
+
+    showURLDetails(mainfest): void {
+        this.showDialogForURL = true;
+
+        this.selectedJobVersion = this.jobVersions[0];
+        this.updateImages();
     }
 
     onImportClick(): void {
