@@ -6,5 +6,8 @@
 export const environment = {
     production: false,
     scale: false,
-    siloUrl: '//scale-ui-api.azurewebsites.net/mocks/silo'
+    // Alpha URL
+    siloUrl: 'https://scale.alpha.aisohio.net/silo'
+    // Mocks URL
+    // siloUrl: '//scale-ui-api.azurewebsites.net/mocks/silo'
 };
