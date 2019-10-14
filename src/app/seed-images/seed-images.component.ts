@@ -422,7 +422,7 @@ export class SeedImagesComponent implements OnInit {
 
     searchJobs(query): Promise<any> {
         this.loading = true;
-        return this.http.get(`${this.environment.siloUrl}/jobs/search/${this.URL}`)
+        return this.http.get(`${this.environment.siloUrl}/jobs/search/${query}`)
             .toPromise()
             .then(response => {
                 this.loading = false;
