@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.6.9](https://github.com/ngageoint/seed-images/compare/v4.6.8...v4.6.9) (2019-10-14)
+
+
+
 ### [4.6.8](https://github.com/ngageoint/seed-images/compare/v4.6.7...v4.6.8) (2019-10-14)
 
 
