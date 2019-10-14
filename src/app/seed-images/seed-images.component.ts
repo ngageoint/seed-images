@@ -498,6 +498,7 @@ export class SeedImagesComponent implements OnInit {
                 selectedPackageVersion: manifest.job.packageVersion,
                 Name: manifest.job.name,
                 Title: manifest.job.title,
+                URL: url
             };
             this.jobVersions = this.selectedJob.LatestJobVersion;
             this.selectedJobVersion = this.selectedJob.LatestJobVersion;
@@ -540,7 +541,6 @@ export class SeedImagesComponent implements OnInit {
     }
 
     showJobDetails(job): void {
-        console.log(job);
         this.getJob(job.ID).then(data => {
             this.selectedJob = data;
             this.showDialog = true;
