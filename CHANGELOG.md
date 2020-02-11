@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/ngageoint/seed-images/compare/v4.6.1...v5.0.0) (2020-02-11)
+
+
+### refactor
+
+* upgrade to Angular 8 and primeng 8 ([a593db2](https://github.com/ngageoint/seed-images/commit/a593db2))
+
+
+### BREAKING CHANGES
+
+* upgrade to Angular 8 and primeng 8
+
+
+
+### 4.6.2 (2019-08-13)
+
+
+
 ### [4.6.10](https://github.com/ngageoint/seed-images/compare/v4.6.9...v4.6.10) (2019-10-14)
 
 
