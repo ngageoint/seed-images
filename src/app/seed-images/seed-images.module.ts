@@ -13,6 +13,8 @@ import { MessageService } from 'primeng/components/common/messageservice';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
     imports: [
@@ -27,7 +29,9 @@ import { TooltipModule } from 'primeng/tooltip';
         DropdownModule,
         ToastModule,
         PanelModule,
-        TooltipModule
+        TooltipModule,
+        InputTextModule,
+        PaginatorModule
     ],
     declarations: [SeedImagesComponent],
     exports: [SeedImagesComponent],
