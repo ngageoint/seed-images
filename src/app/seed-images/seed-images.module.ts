@@ -10,11 +10,9 @@ import { DialogModule } from 'primeng/dialog';
 import { PanelModule } from 'primeng/panel';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/components/common/messageservice';
-import {
-    AutoCompleteModule,
-    DropdownModule,
-    TooltipModule
-} from 'primeng/primeng';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DropdownModule } from 'primeng/dropdown';
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
     imports: [
